@@ -13,25 +13,26 @@
 
 ## 一. 容器属性
 
-1. display
+1.  display
 
-   1. grid
-      默认情况 ，容器元素都是块元素
+        * grid
 
-   2. inline-grid
-      行内元素
+    默认情况 ，容器元素都是块元素
+
+        * inline-grid
+
+    行内元素
 
 > > 注意!
 
-> > 设置为网格布局之后, 容器 项目的 float / display: inline-block /display: table-cell / vertical-align /column-\* ,属性都将失效
+> > 设置为网格布局之后, 容器 项目的 float / display: inline-block / display: table-cell / vertical-align / column-\* ,属性都将失效
 
 2. grid-template-rows/grid-template-columns
 
 > 定义每一行的行高/定义每一列的列宽
 
     1. repeat()方法
-
-简化当网格很多时，重复写同样的值。接受两个参数，第一个参数是重复的次数
+    简化当网格很多时，重复写同样的值。接受两个参数，第一个参数是重复的次数
 
     	* grid-template-rows: 33.33% 33.33% 33.33%;
     	* grid-template-rows: repeat(3, 33.33%);
@@ -39,43 +40,45 @@
     	* grid-template-columns: repeat(3, 33.33%);
     	* gird-template-columns: repeat(2 , 100px 50px 20px);
 
-    2. auto-fill关键字
+    2. auto-fill 关键字
 
     自动填充内容，一直到容器无法容纳
 
-- grid-template-columns: repeat(auto-fill, 100px);
+    - grid-template-columns: repeat(auto-fill, 100px);
 
-  3. fr (fraction) 片段
 
-  - grid-template-columns: 1fr 1fr;
-    表示 两列的宽度相同
+    3. fr (fraction) 片段
 
-- grid-template-columns: 150px 1fr 2fr;
-  表示 第一列宽度固定 150px 2 列宽度是 3 列的一半
+    	* grid-template-columns: 1fr 1fr;
+    	表示 两列的宽度相同
 
-  4. minmax() 方法，最小值和最大值
+    	* grid-template-columns: 150px 1fr 2fr;
 
-  产生一个范围,表示行/列的高度/宽度在这个范围内
+    表示 第一列宽度固定 150px 2 列宽度是 3 列的一半
 
-  - grid-template-columns: 1fr 1fr minmax(100px, 1fr);
+    4. minmax() 方法，最小值和最大值
 
-  - auto 关键字
-    由浏览器自己决定
+    产生一个范围,表示行/列的高度/宽度在这个范围内
 
-  5. 网格线的名称(方便以后的引用)
+    	* grid-template-columns: 1fr 1fr minmax(100px, 1fr);
 
-  - grid-template-columns: [c1] 100px [c2] 100px [c3] auto [c4];
-  - grid-template-rows: [r1] 100px [r2] 100px [r3] auto [r4];
+    	* auto关键字
+    	由浏览器自己决定
+
+    5. 网格线的名称(方便以后的引用)
+
+    	* grid-template-columns: [c1] 100px [c2] 100px [c3] auto [c4];
+    	* grid-template-rows: [r1] 100px [r2] 100px [r3] auto [r4];
 
 3. grid-row-gap
 
 (行间距)
 
-4. grid-column-gap
+grid-column-gap
 
 (列间距)
 
-5. grid-gap
+grid-gap
 
 (行间距/列间距的缩写)
 
@@ -83,98 +86,97 @@
     * grid-column-gap: 20px;
     * grid-gap:20px 20px
 
-    最新标准，删除 grid-
+    最新标准，删除 `grid-`
     * row-gap: 20px; 
     * column-gap: 20px;
     * gap:20px 20px
 
-6. grid-template-areas 指定区域，一个区域由单个或多个网格组成
+4.  grid-template-areas 指定区域，一个区域由单个或多个网格组成
 
-   - grid-template-areas: 'a b c' 'd e f' 'g h i';
+    划分网格后，容器的子元素会按顺序自动放置每一个网格
 
-   - grid-template-areas: 'a a a' 'b b b' 'c c c';
+        * grid-template-areas: 'a b c' 'd e f' 'g h i';
 
-   某些区域不需要利用，则使用"点"(.)表示
+        * grid-template-areas: 'a a a' 'b b b' 'c c c';
 
-   - grid-template-areas: 'a . c' 'd . f' 'g . i';
+        某些区域不需要利用，则使用"点"(.)表示
+
+        * grid-template-areas: 'a . c' 'd . f' 'g . i';
 
 > > 注意!
 
 > > 区域的命名会影响网格线区域的起始网格线自动命名为 `区域名-start` , 终止网格线自动命名为 `区域名-end` 。
 
-7. grid-auto-flow
+5.  grid-auto-flow
 
-划分网格后，容器的子元素会按顺序自动放置每一个网格
+        * row （默认）先行后列
 
-    * row （默认）先行后列
+        * column 先列后行
 
-    * column 先列后行
+        * row dense 某些项目指定后，剩余项目"先行后列"排列，尽量不出现空格
 
-    * row dense 某些项目指定后，剩余项目"先行后列"排列，尽量不出现空格
+        * column dense 某些项目指定后，剩余项目"先列后行"排列，尽量不出现空格
 
-    * column dense 某些项目指定后，剩余项目"先列后行"排列，尽量不出现空格
+6.  justify-items
 
-8. justify-items
+    单元格水平位置(左中右)
 
-单元格水平位置(左中右)
+    align-items
 
-9. align-items
+    单元格垂直位置(上中下)
 
-单元格垂直位置(上中下)
+    place-items
 
-10. place-items
+    单元格水平/垂直位置的简写方式
 
-单元格水平/垂直位置的简写方式
+        * start  起始对对齐
 
-    * start  起始对对齐
+        * end 结束对齐
 
-    * end 结束对齐
+        * center 居中
 
-    * center 居中
+        * stretch(默认值) 拉伸,占满单元格整个宽度
 
-    * stretch(默认值) 拉伸,占满单元格整个宽度
+7.  justify-content
 
-11. justify-content
+    内容区域在容器的水平方向对齐方式
 
-内容区域在容器的水平方向对齐方式
+    align-content
 
-align-content
+    内容区域在容器的垂直方向对齐方式
 
-内容区域在容器的垂直方向对齐方式
+    place-content
 
-place-content
+    水平方向/垂直方向对齐方式的简写
 
-水平方向/垂直方向对齐方式的简写
+        * start 容器起始边框对齐
 
-    * start 容器起始边框对齐
+        * end 容器终止边框对齐
 
-    * end 容器终止边框对齐
+        * center 容器内部居中
 
-    * center 容器内部居中
+        * stretch 项目没有指定大小时，拉伸占满整个容器
 
-    * stretch 项目没有指定大小时，拉伸占满整个容器
+        * space-around 项目两侧间隔相等
 
-    * space-around 项目两侧间隔相等
+        * space-between 项目与项目之间间隔相等，项目与边框之间没有间隔
 
-    * space-between 项目与项目之间间隔相等，项目与边框之间没有间隔
+        * space-evenly 项目与项目，项目与边框，间隔都相等
 
-    * space-evenly 项目与项目，项目与边框，间隔都相等
+8.  grid-auto-columns ，grid-auto-rows
 
-12. grid-auto-columns ，grid-auto-rows
+    当项目出现在网格外部，浏览器会自动创建多余的网格，以便放置项目，
 
-当项目出现在网格外部，浏览器会自动创建多余的网格，以便放置项目，
+        * grid-auto-columns/grid-auto-rows 分别用来设置自动创建的网格的列宽/行高
 
-    * grid-auto-columns/grid-auto-rows 分别用来设置自动创建的网格的列宽/行高
+9.  grid-template 属性 ，grid 属性
 
-13. grid-template 属性 ，grid 属性
+        *  grid-template
 
-    1.  grid-template
+         grid-template-columns/grid-template-rows/grid-template-areas 的合并简写
 
-        - grid-template-columns/grid-template-rows/grid-template-areas 的合并简写
-
-    2.  grid 属性
-
-    - grid-template-rows/grid-template-columns/grid-template-areas/ grid-auto-rows/grid-auto-columns/grid-auto-flow 的合并简写
+    - grid 属性
+      grid-template-rows/grid-template-columns/grid-template-areas/ grid-auto-rows/grid-auto-columns/grid-auto-flow 的合并简写
 
 ## 二. 项目属性
 
@@ -232,21 +234,18 @@ place-content
 
 ```
 
-6. 直接指定项目所在区域
+6.  直接指定项目所在区域
 
-grid-area
+        * grid-area
+        前提 grid-template-area 定义了区域
 
-前提 grid-template-area 定义了区域
+        * grid-area: e ;
 
-    * grid-area: e ;
+7.  作为
 
-7. 作为
-
-```
-grid-row-start、grid-column-start、grid-row-end、grid-column-end的简写
-grid-area: <row-start> / <column-start> / <row-end> / <column-end>;
-grid-area: 1 / 1 / 3 / 3;
-```
+        * grid-row-start、grid-column-start、grid-row-end、grid-column-end的简写
+        * grid-area: <row-start> / <column-start> / <row-end> / <column-end>;
+        * grid-area: 1 / 1 / 3 / 3;
 
 8.  项目自身内容的对齐方式
 
