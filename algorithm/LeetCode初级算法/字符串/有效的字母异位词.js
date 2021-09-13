@@ -19,12 +19,10 @@ var isAnagram = function (s, t) {
   // const sObj = {};
   // const tObj = {};
   // for (let i = 0; i < sLen; i++) {
-  //   const item = s.charAt(i);
-  //   sObj[item] = sObj[item] ? sObj[item] + 1 : 1;
-  // }
-  // for (let i = 0; i < tLen; i++) {
-  //   const item = t.charAt(i);
-  //   tObj[item] = tObj[item] ? tObj[item] + 1 : 1;
+  //   const sItem = s.charAt(i);
+  //   const tItem = t.charAt(i);
+  //   tObj[tItem] = tObj[tItem] ? tObj[tItem] + 1 : 1;
+  //   sObj[sItem] = sObj[sItem] ? sObj[sItem] + 1 : 1;
   // }
   // for (let item in sObj) {
   //   if (sObj[item] !== tObj[item]) {
