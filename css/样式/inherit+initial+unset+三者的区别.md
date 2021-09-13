@@ -1,19 +1,22 @@
-# inherit initial unset 三者的区别
+# inherit+initial+unset+三者的区别
 
-## inherit 继承
+> css 所有属性都可以设置这三个值
 
-### css属性是否为可继承
+1. initial 最初，ie6-11 不兼容，opera 大部分不兼容
 
-## initial 最初
+> 用于设置 css 的默认值。IE 不支持
 
-### 用于设置css的默认值。IE不支持
+2. unset 不设置，ie6-11 不兼容，其他浏览器低版本不兼容
 
-## unset 不设置
+> 是关键字 initial 和 inherit 的组合
 
-### 是关键字 initial 和 inherit的组合
+    1. 该属性为默认继承属性，等同于 inherit
+    2. 该属性为非继承属性，等同于 initial
 
-#### 该属性为默认继承属性， 等同于 inherit
+3. inherit 继承，ie6-7 不兼容，opera12 不兼容，其他浏览器兼容
 
-#### 该属性为非继承属性，等同于initial
+> 继承父级元素的值
 
-### 换句话说，unset 默认为 inherit的样式, 其次为initial的样式
+## 参考
+
+- [css inherit、initial、unset](https://www.zhangxinxu.com/wordpress/2020/01/css-initial-unset/)
