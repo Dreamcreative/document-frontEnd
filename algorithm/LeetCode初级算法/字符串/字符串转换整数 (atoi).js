@@ -31,7 +31,7 @@ var myAtoi = function (s) {
   //   } else if (item === '-') {
   //     // 如果是 - ，
   //     // 如果 unit 和 result 都不存在，表示是第一个 - 号
-  //     // 直接返回
+  //     // 设置 unit ,继续下一轮循环
   //     if (unit !== '' || result !== '') {
   //       break;
   //     }
@@ -40,7 +40,7 @@ var myAtoi = function (s) {
   //   } else if (item === '+') {
   //     // 如果是 + ，
   //     // 如果 unit 和 result 都不存在，表示是第一个 + 号
-  //     // 直接返回
+  //     // 设置 unit ,继续下一轮循环
   //     if (unit !== '' || result !== '') {
   //       break;
   //     }
@@ -49,7 +49,7 @@ var myAtoi = function (s) {
   //   } else if (item === ' ') {
   //     // 如果是 ' ' ，
   //     // 如果 unit 和 result 都不存在，表示是第一个 ' ' 号
-  //     // 直接返回
+  //     // 继续下一轮循环
   //     if (unit !== '' || result !== '') {
   //       break;
   //     }
