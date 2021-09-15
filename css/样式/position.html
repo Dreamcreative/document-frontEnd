@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>position 定位</title>
+  <style>
+    .box {
+      height: 200px;
+      background-color: yellowgreen;
+      overflow: auto;
+    }
+
+    .sticky {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 20px;
+      background-color: red;
+      text-align: center;
+    }
+
+    .fixed {
+      position: fixed;
+      bottom: 100px;
+      left: 100px;
+      width: 20px;
+      height: 20px;
+      background-color: violet;
+    }
+
+    p {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <p>position: sticky</p>
+    <div>
+      <p class="sticky">
+        11
+      </p>
+      <dl>
+        <dt>A</dt>
+        <dd>Andrew W.K.</dd>
+        <dd>Apparat</dd>
+        <dd>Arcade Fire</dd>
+        <dd>At The Drive-In</dd>
+        <dd>Aziz Ansari</dd>
+      </dl>
+      <p class="sticky">
+        222
+      </p>
+      <dl>
+        <dt>B</dt>
+        <dd>Bndrew W.K.</dd>
+        <dd>BppBrBt</dd>
+        <dd>BrcBde Fire</dd>
+        <dd>Bt The Drive-In</dd>
+        <dd>Bziz Ansari</dd>
+      </dl>
+      <p class="sticky">
+        333
+      </p>
+      <dl>
+        <dt>C</dt>
+        <dd>Cndrew W.K.</dd>
+        <dd>CppCrCt</dd>
+        <dd>CrcCde Fire</dd>
+        <dd>Ct The Drive-In</dd>
+        <dd>Cziz Ansari</dd>
+      </dl>
+    </div>
+    <div class="fixed"></div>
+
+  </div>
+</body>
+
+</html>
