@@ -6,7 +6,7 @@
 
 ## 优先级
 
-> !important > 内联样式 > id 选择器 > class 选择器 > 通用选择器
+> !important > 内联样式 > id 选择器 > class、伪类、属性 选择器 > 标签选择器 > 继承 > 通用选择器
 
 ### 使用 !important
 
