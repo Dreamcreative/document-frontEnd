@@ -100,5 +100,4 @@
 
 - [MDN-BFC](https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context)
 - [CSS 中重要的 BFC](https://segmentfault.com/a/1190000013023485)
-- [css 布局的各种 FC 简单介绍：BFC，IFC，GFC，FFC
-  ](https://segmentfault.com/a/1190000014886753)
+- [css 布局的各种 FC 简单介绍：BFC，IFC，GFC，FFC](https://segmentfault.com/a/1190000014886753)
