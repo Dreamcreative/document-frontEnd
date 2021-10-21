@@ -8,7 +8,7 @@
 
 > 理论上循环引用会导致栈溢出，但并非所有循环引用都会导致栈溢出
 
-### 案例一
+### 案例一 不会溢出
 
 ```
 <!-- a.js -->
@@ -106,6 +106,38 @@ console.log('a.js 执行完毕');
 
 console.log("在 main.js 之中, a.done=%j, b.done=%j",true,true);
 ```
+
+## 案例二 栈溢出
+
+> 如果模块导出是函数，这种循环引用时会栈溢出的
+
+```
+<!-- a.js  -->
+import f from "./b.js";
+export default (val)=>{
+  f("a");
+  console.log(val)
+}
+```
+
+```
+<!-- b.js  -->
+import f from "./a.js";
+export default (val)=>{
+  f("a");
+  console.log(val)
+}
+```
+
+```
+<!-- main.js -->
+import a from './a.js';
+a(1);
+```
+
+## 解决方案
+
+不管那种情况，在 webpack 打包时，都是不会报错的。所以可以借助插件 `circle-dependency-plugin` 来进行提示
 
 ## 总结
 
