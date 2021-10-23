@@ -27,7 +27,7 @@
 > 每个 loader、plugin 都有其启动时间。
 
     1. 为loader 指定 include，减少loader应用范围，仅应用于最少数量的必要模块
-    2. 使用 webpack资源模块 `asset module`代替就的 asset loader（url-loader、file-loader等）
+    2. 使用 webpack资源模块 `asset module`代替旧的 asset loader（url-loader、file-loader等）
 
       ```
         module.exports={
@@ -126,51 +126,51 @@
 
     3. tree shaking 摇树优化
 
-    1. js
+       1. js
 
-       > js tree shaking: 将 JavaScript 中未使用的代码移除
-       > 通过 package.json 中的 "sideEffects"属性，来想 webpack 提供提示，表明项目中的那些文件可以安全地删除掉文件中的未使用部分
+          > js tree shaking: 将 JavaScript 中未使用的代码移除
+          > 通过 package.json 中的 "sideEffects"属性，来想 webpack 提供提示，表明项目中的那些文件可以安全地删除掉文件中的未使用部分
 
-       ```
-       <!-- package.json -->
-         {
-           <!-- sideEffects:false, -->
-           当代码有副作用时，需要将 sideEffects 改为提供一个数组，添加有副作用代码的文件路径
-           sideEffects: ["./src/some-side-effectful-file.js"]
-         }
-       ```
+          ```
+          <!-- package.json -->
+            {
+              <!-- sideEffects:false, -->
+              当代码有副作用时，需要将 sideEffects 改为提供一个数组，添加有副作用代码的文件路径
+              sideEffects: ["./src/some-side-effectful-file.js"]
+            }
+          ```
 
-    1. css
+       2. css
 
-       > css tree shaking :将 代码中没有用到的 css 代码移除，可以大幅度减少打包后的 css 文件大小。
-       > mini-css-extract-plugin 对 css 代码进行分离 ，先将 css 进行分离，再将 css tree shaking
-       > purgecee-webpack-plugin 对 css tree shaking
+          > css tree shaking :将 代码中没有用到的 css 代码移除，可以大幅度减少打包后的 css 文件大小。
+          > mini-css-extract-plugin 对 css 代码进行分离 ，先将 css 进行分离，再将 css tree shaking
+          > purgecee-webpack-plugin 对 css tree shaking
 
-       ```
-        const glob = require('glob')
-        const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-        const PurgeCSSPlugin = require('purgecss-webpack-plugin')
-        const paths = require('paths')
+          ```
+            const glob = require('glob')
+            const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+            const PurgeCSSPlugin = require('purgecss-webpack-plugin')
+            const paths = require('paths')
 
-        module.exports={
-          plugins:[
-            // 打包体积分析
-            new BundleAnalyzerPlugin(),
-            // 提取 CSS
-            new MiniCssExtractPlugin({
-              filename: "[name].css",
-            }),
-            // CSS Tree Shaking
-            new PurgeCSSPlugin({
-              paths: glob.sync(`${paths.appSrc}/**/*`,  { nodir: true }),
-            }),
-          ]
-        }
-       ```
+            module.exports={
+              plugins:[
+                // 打包体积分析
+                new BundleAnalyzerPlugin(),
+                // 提取 CSS
+                new MiniCssExtractPlugin({
+                  filename: "[name].css",
+                }),
+                // CSS Tree Shaking
+                new PurgeCSSPlugin({
+                  paths: glob.sync(`${paths.appSrc}/**/*`,  { nodir: true }),
+                }),
+              ]
+            }
+          ```
 
 3.  浏览器缓存
 
-> 使用 webpack hash，为 webpack 打包后的输出文件名，设置 hash 值。当文件名不变时，http 请求会使用 浏览器缓存
+> 使用 webpack hash 策略，为 webpack 打包后的输出文件名，设置 hash 值。当文件名不变时，http 请求会使用 浏览器缓存
 
 ```
 module.exports={
