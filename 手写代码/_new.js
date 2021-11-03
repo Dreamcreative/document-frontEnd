@@ -9,10 +9,16 @@
  */
 
 function myNew() {
+  // 创建一个空对象
   let obj = {};
-  let construct = [].shift(arguments);
+  // 获取构造函数
+  let construct = [].shift.call(arguments);
+  // 将对象的原型链指向构造函数的原型属性
   obj.__proto__ = construct.prototype;
+  // 修改构造函数的this指向
   let result = construct.apply(obj, arguments);
+  // 构造函数返回的是一个对象 ，返回
+  // 否则返回对象
   return typeof result === 'object' ? result : obj;
 
 }
