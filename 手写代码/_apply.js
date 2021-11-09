@@ -5,7 +5,7 @@
  * @returns 
  */
 Function.prototype.myApply = function (context, arg) {
-  if (typeof this !== "function") throw Error('not a function');
+  if (typeof this !== "function") throw new Error('not a function');
   context = context ?? window;
   context.fn = this;
   let result;
