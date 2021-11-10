@@ -54,3 +54,7 @@ Object.prototype.__proto__ === null;
 1. Function.__proto__ === Function.prototype
 
 > 原因 Function对象，是一个内置对象。-- 规定
+
+## 怪异现象
+
+1. Function.prototype.bind 生成的函数没有 prototype 属性
