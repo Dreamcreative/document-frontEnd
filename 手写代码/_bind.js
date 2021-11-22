@@ -39,7 +39,10 @@ Function.prototype.myBind = function (context, ...args) {
   let F = function () {
     return _this.apply(this instanceof F ? this : context ?? window, [...args, ...arguments])
   }
-  FNOP.prototype = this.prototype;
+  // 将 this (调用 bind 方法的函数)的原型属性赋值给 FNOP
+  FNOP.prototype = _this.prototype;
+  // 将需要返回的 F 函数的原型属性设置为 已改变了 原型属性的 FNOP
+  // 使用 FNOP 函数来作为中转，来修改 F 函数的原型属性，防止当 F 函数修改时，同时修改了 this (调用 bind 方法的函数)的原型属性
   F.prototype = new FNOP();
   return F
 }
