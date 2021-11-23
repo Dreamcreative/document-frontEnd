@@ -6,7 +6,10 @@
 
 ### useState(initialState) 
 
-> `let [number, setNumber] = useState(0)`
+> 使用
+
+   1. `let [number, setNumber] = useState(0)`
+   2. `let [number, setNumber]= useState(()=> 0)`
 
 > 返回一个数组，数组第一项用于读取此时的 state 值，第二项用于更新 state 函数
 
@@ -103,8 +106,8 @@ mountReducer(reducer, initialArg, init){
 useEffect(()=>{
     // dosomething
     return ()=>{
-        // 返回一个销毁函数 
-        // 当组件销毁前执行的一些操作，比如清除定时器，解绑节点事件等
+        // 返回一个销毁函数 ，比如清除定时器，解绑节点事件等
+        // 会在每次组件更新时执行，可以通过传入 deps 来改变执行次数
     }
 },[deps])
 ```
@@ -166,8 +169,8 @@ pushEffect(tag, create, destory, deps){
 useLayoutEffect(()=>{
     // dosomething
     return ()=>{
-        // 返回一个销毁函数 
-        // 当组件销毁前执行的一些操作，比如清除定时器，解绑节点事件等
+        // 返回一个销毁函数 ，比如清除定时器，解绑节点事件等
+        // 会在每次组件更新时执行，可以通过传入 deps 来改变执行次数
     }
 },[deps])
 ```
