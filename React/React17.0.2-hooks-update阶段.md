@@ -1,6 +1,6 @@
 # React 17.0.2 hooks update 更新阶段
 
-> hooks 是一个环形链表结构，使用 next 执行下一个 hook，所以 hook 只能在函数组件的顶级作用域中使用 
+> hooks 是一个环形链表结构，使用 next 指向下一个 hook，所以 hook 只能在函数组件的顶级作用域中使用 
 
 ## update 阶段
 
@@ -48,6 +48,17 @@ is = objectIs(x, y){
 basicStateReducer(state, action){
   return typeof action === 'function'? action(state): action;
 }
+// 判断 hooks 的依赖是否相同
+// 遍历 nextDeps 和 prevDeps 中的每一个值，判断是否相等，
+areHookInputsEqual(nextDeps, prevDeps){
+  for(let i=0;i<nextDeps.length && i<prevDeps.length ;i++ ){
+    if(is(nextDeps[i], prevDeps[i])){
+      continue;
+    }
+    return false;
+  }
+  return true;
+}
 ```
 
 ### useState(initialState)
@@ -67,6 +78,8 @@ updateReducer(reducer, initialArg, init){
   // 上一次未被执行的更新队列
   const pendingQueue= queue.pending;
   if(pendingQueue !== null){
+    // reRender阶段 ：当前更新周期又产生了新的更新，就继续执行这些更新，直到当前渲染周期中没有更新为止
+
     // 我们有尚未处理的更新队列
     // 将它们添加到当前的更新队列中
     if(baseQueue !== null){
@@ -80,6 +93,8 @@ updateReducer(reducer, initialArg, init){
     }
   }
   if(baseQueue !==null){
+    // 如果是正常的 render 阶段(非 reRender)，对每个更新判断其优先级，如果不是当前整体更新优先级内的更新会跳过。第一个跳过的 Update 会变成新的 baseUpdate,它记录了在之后所有的 Update,即便是优先级比它高的，需要保证后续的更新要在它更新之后的基础上执行
+
     // 合并之后 先更新上一次未被执行的更新队列
     const first = baseQueue.next;
     let newState = current.baseState;
@@ -153,3 +168,258 @@ updateReducer(reducer, initialArg, init){
   return [hook.memoizedState, dispatch];
 }
 ```
+
+### useReducer(reducer, initialArg, init)
+
+```js
+useReducer(reducer, initialArg, init){
+  updateReducer(reducer, initialArg, init);
+}
+```
+
+### useEffect(create, deps) ，执行副作用函数，副作用就是 `可能会产生更新的操作`
+
+```js
+useEffect(create, deps){
+  updateEffect(create, deps)
+}
+updateEffect(create, deps){
+  return updateEffectImpl(PassiveEffect, HookPassive, create, deps);
+}
+updateEffectImpl(fiberFlags, hookFlags, create, deps){
+  // 获取当前 hook
+  const hook = updateWorkInProgressHook();
+  const nextDeps = deps === undefined? null:deps;
+  let destroy = undefined;
+  if(currentHook === null){
+    const prevEffect = currentHook.memoizedState;
+    destroy = prevEffect.destroy;
+    if(nextDeps !==null){
+      const prevDeps = prevEffect.deps;
+      if(areHookInputsEqual(nextDeps, prevDeps)){
+        pushEffect(hookFlags, create, destroy, nextDeps);
+        return;
+      }
+    }
+  }
+  currentlyRenderingFiber.flags |= fiberFlags;
+  hook.memoizedState = pushEffect(
+    HookHasEffect | hookFlags,
+    create,
+    destroy,
+    nextDeps,
+  );
+}
+// 向当前的 Fiber 节点添加 effectTag,并且会创建 updateQueue
+// useEffect 添加 UpdateEffect|PassiveEffect
+// useLayoutEffect 添加 UpdateEffect
+// useImperativeHandle 添加 UpdateEffect|PassiveEffect
+pushEffect(tag, create, destroy, deps){
+  const effect = {
+    tag,
+    create,
+    destroy,
+    deps,
+    next:null
+  };
+  let componentUpdateQueue = currentlyRenderingFiber.updateQueue;
+  if(componentUpdateQueue ===null){
+    componentUpdateQueue = createFunctionComponentUpdateQueue();
+    currentlyRenderingFiber.updateQueue = componentUpdateQueue;
+    componentUpdateQueue.lastEffect = effect.next = effect;
+  }else{
+    const lastEffect = componentUpdateQueue.lastEffect;
+    if(lastEffect === null){
+      componentUpdateQueue.lastEffect = effect.next = effect;
+    }else{
+      const firstEffect = lastEffect.next;
+      lastEffect.next = effect;
+      effect.next = firstEffect;
+      componentUpdateQueue.lastEffect = effect;
+    }
+  }
+  return effect;
+}
+```
+
+### useLayoutEffect(create, deps)
+
+```js
+useLayoutEffect(create, deps){
+  return updateLayoutEffect(create, deps);
+}
+updateLayoutEffect(create, deps){
+  return updateEffectImpl(UpdateEffect, HookLayout, create, deps);
+}
+```
+
+### useMemo(create, deps)
+
+```js
+useMemo(create, deps){
+  return updateMemo(create, deps);
+}
+/**
+  更新阶段的 useMemo
+  判断 当前传入的 deps 与上一次传入的 deps 是否相同
+  如果相同，则直接上一次的值。
+  如果不同，则执行一遍传入的方法，返回
+*/
+updateMemo(nextCreate, deps){
+  const hook = updateWorkInProgressHook();
+  const nextDeps = deps === undefined? null: deps;
+  const prevState = hook.memoizedState;
+  if(prevState !== null){
+    if(nextDeps!==null){
+      const prevDeps = prevState[1];
+      if(areHookInputsEqual(nextDeps, prevDeps)){
+        return prevState[0];
+      }
+    }
+  }
+  const nextValue = nextCrate();
+  hook.memoizedState = [nextValue, nextDeps];
+  return nextValue;
+}
+```
+
+### useCallback(callback, deps)
+
+```js
+useCallback(callback, deps){
+  return updateCallback(callback, deps);
+}
+/**
+  更新阶段的 useCallback
+  判断当前传入的 deps 与 上一次传入的 deps 是否相同
+  如果相同，直接返回上一次的值
+  如果不同，则返回 callback
+*/
+updateCallback(callback, deps){
+  const hook = updateWorkInProgressHook();
+  const nextDeps = deps === undefined? null: deps;
+  const prevState = hook.memoizedState;
+  if(prevState!==null){
+    if(nextDeps!==null){
+      const prevDeps = prevState[1];
+      if(areHookInputsEqual(nextDeps, prevDeps)){
+        return prevState[0];
+      }
+    }
+  }
+  hook.memoizedState = [callback, nextDeps];
+  return callback;
+}
+```
+
+### useRef(initialValue)
+
+```js
+useRef(initialValue){
+  return updateRef(initialValue);
+}
+/**
+  更新阶段 useRef
+  直接返回 mount 阶段初始化时的值
+*/
+updateRef(initialValue){
+  const hook = updateWorkInProgressHook();
+  return hook.memoizedState;
+}
+```
+
+### useContext()
+
+```js
+useContext(context, observedBits){
+  return readContext(context, observedBits);
+}
+readContext(context, observedBits){
+
+}
+```
+
+### useImperativeHandle(ref, create, deps)
+
+```js
+useImperativeHandle(ref, create, deps){
+  return updateImperativeHandle(ref, create, deps);
+}
+updateImperativeHandle(ref, create, deps){
+  const effectDeps = deps !== null && deps !== undefined? deps.concat([ref]):null;
+  return updateEffectImpl(
+    UpdateEffect,
+    HookLayout,
+    imperativeHandleEffect.bind(null, create, ref),
+    nextDeps
+  )
+}
+/**
+  更新阶段
+  为当前 fiber 节点打上与 useEffect 相同的 effectTag
+*/
+updateEffectImpl(fiberFlags, hookFlags, create, deps){
+  const hook = updateWorkInProgressHook();
+  const nextDeps = deps === undefined? null: deps;
+  let destroy = undefined;
+  if(currentHook !== null){
+    const prevEffect = currentHook.memoizedState;
+    destroy = prevEffect.destroy;
+    if(nextDeps !==null){
+      const prevDeps = prevEffect.deps;
+      if (areHookInputsEqual(nextDeps, prevDeps)) {
+        pushEffect(hookFlags, create, destroy, nextDeps);
+        return;
+      }
+    }
+  }
+  currentlyRenderingFiber.flags |= fiberFlags;
+  hook.memoizedState = pushEffect(
+    HookHasEffect | hookFlags,
+    create,
+    destroy,
+    nextDeps,
+  );
+}
+```
+
+### useDeferredValue(value)
+
+```js
+useDeferredValue(value){
+  return updateDeferredValue(value);
+}
+updateDeferredValue(value){
+  const [prevValue, setValue] = updateState(value);
+  updateEffect(() => {
+    const prevTransition = ReactCurrentBatchConfig.transition;
+    ReactCurrentBatchConfig.transition = 1;
+    try {
+      setValue(value);
+    } finally {
+      ReactCurrentBatchConfig.transition = prevTransition;
+    }
+  }, [value]);
+  return prevValue;
+}
+```
+
+### useTransition()
+
+```js
+useTransition(){
+  return updateTransition()
+}
+updateTransition(){
+  const [isPending] = updateState(false);
+  const startRef = updateRef();
+  const start = startRef.current;
+  return [start, isPending];
+}
+```
+
+## 参考
+
+> React v17.0.2  /package/react-reconciler/src/ReactFiberHooks.new.js
+
+* [useState](https://react.jokcy.me/book/hooks/hooks-use-state.html)
