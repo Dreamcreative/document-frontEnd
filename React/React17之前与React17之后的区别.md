@@ -6,11 +6,12 @@
 
    1. React 17 不再在 `document 底层附加事件处理程序`，而是添加到`渲染 React 树的根节点 DOM 容器 <div id='root'></div>`。 
    2. React 17 不再使用事件池
-   3. 返回未定义的一致错误
 
-      > React 17 之前。返回`undefined 总是一个错误`。React 17 中， forwardRef 和 memo 组件的行为与常规的函数和类组件一致，返回`undefined` 将是一个错误。
+## 返回未定义的一致错误
 
-      > 如果不想渲染任何内容， 返回 `null`
+   > React 17 之前。返回`undefined 总是一个错误`。React 17 中， forwardRef 和 memo 组件的行为与常规的函数和类组件一致，返回`undefined` 将是一个错误。
+
+   > 如果不想渲染任何内容， 返回 `null`
 
 ## 新的 JSX 转换
 
