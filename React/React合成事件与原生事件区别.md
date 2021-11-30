@@ -1,4 +1,4 @@
-# React合成事件与原生事件区别
+# React合成事件与原生事件区别 
 
 ## React 使用合成事件原因
 
@@ -108,6 +108,11 @@ React 事件：父元素事件监听！
 1. React 中所有事件都是挂载在`document`对象上
 2. 当真实 DOM 元素触发事件后，会冒泡到`document`对象后，再处理 React 事件。所以会先处理`原生事件`再处理`React 合成事件`
 3. 最后执行`document`节点挂载的事件
+
+# React 17 之后，合成事件的改变
+
+1. React 17 之后，不再使用事件池
+2. React 17 之后，`React 不再将事件代理在 document 节点上`，而是代理在`React 的渲染节点上 <div id='root'></div>`
 
 ## 参考
 
