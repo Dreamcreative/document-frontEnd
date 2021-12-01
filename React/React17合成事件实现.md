@@ -86,7 +86,7 @@ TRANSITION_END: 'transitionEnd',
 'waiting': 'waiting',
 ```
 
-## 创建 route 实例
+## 创建 root 实例
 
 ```js
 createRootImpl(
@@ -100,6 +100,7 @@ createRootImpl(
     // 监听所有支持的事件
     listenToAllSupportedEvents(rootContainerElement);
 }
+
 listenToAllSupportedEvents(rootContainerElement){
     // rootContainerElement 就是 React 节点挂载的根节点，由 ReactRoot 函数传入
     allNativeEvents.forEach(domEventName=>{
@@ -121,6 +122,7 @@ listenToAllSupportedEvents(rootContainerElement){
         );
     })
 }
+
 // 监听原生事件
 listenToNativeEvent(
     domEventName,
@@ -168,6 +170,7 @@ addTrappedEventListener(
         );
     }
 }
+
 // 添加冒泡阶段事件监听
 addEventBubbleListener(
     target,
@@ -177,6 +180,7 @@ addEventBubbleListener(
     target.addEventListener(eventType, listener, false);
     return listener;
 }
+
 // 添加捕获阶段事件监听
 addEventCaptureListener(
     target,
@@ -186,6 +190,7 @@ addEventCaptureListener(
     target.addEventListener(eventType, listener, true);
     return listener;
 }
+
 ```
 
 ## 创建合成事件
@@ -240,6 +245,7 @@ createSyntheticEven(Interface){
         this.isPropagationStopped = false;
         return this;
     }
+    
     // 重写 preventDefault、stoppropagation、 persist、isPersistent
     Object.assign(SyntheticBaseEvent.prototype,{
         preventDefault:function(){
