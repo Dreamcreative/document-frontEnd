@@ -60,7 +60,10 @@ reconcileChildFibers(
         switch(newChild.$$typeof){
             // 常规 react 元素
             case REACT_ELEMENT_TYPE:
+            // 给新生成的 fiber 节点打上 Placement 标记
                 return placeSingleChild(
+                    // 单节点时，先遍历旧节点如果旧节点可复用，旧复用旧节点，并给复用旧节点的兄弟节点打上 Deletion 标记
+                    // 如果旧节点遍历完了，还没有可复用节点，就新生成一个 fiber 节点
                     reconcileSingleElement(
                         returnFiber,
                         currentFirstChild,
@@ -96,7 +99,10 @@ reconcileChildFibers(
 
     if(typeof newChild === 'string' || typeof newChild === 'number'){
         // 如果是文本类型， 字符串 或者是 数字
+        // 给新生成的 fiber 节点打上 Placement 标记
         return placeSingleChild(
+            // 如果旧节点是文本节点，给旧节点的兄弟节点打上 Deletion 标记，复用旧节点
+            // 如果不是文本节点，给旧节点打上 Deletion 标记，创建一个新的 文本 fiber 节点
             reconcileSingleTextNode(
                 returnFiber,
                 currentFirstChild,
@@ -115,14 +121,17 @@ reconcileChildFibers(
             lanes
         )
     }
-
-    return reconcileChildFibers;
+    // 给剩余节点打上 Deletion 标记
+    return deleteRemainingChildren(returnFiber, currentFirstChild);
 }
 // 处理单节点
 /**
     新节点是单节点
-    对新节点会做节点类型判断，Fragment/Block/default 等不同节点类型的判断
-    新旧节点的 key 属性相同，并且新旧节点的节点类型相同，则进行节点复用，删除旧节点的 兄弟节点；
+    遍历旧节点
+        如果新旧节点的 key 和 节点类型都相同，则 给剩余旧节点的兄弟节点打上 Deletion 标记
+        如果新旧节点的 key 不同，则为当前旧节点打上 Deletion 标记，并进行下一个旧节点 oldChild.sibling 的遍历
+    如果旧节点遍历完了，还是没有找到可复用的节点，旧新生成一个 fiber 节点
+        判断新节点的节点类型：如果新节点是 Fragment ,则创建 Fragment fiber，否则创建 普通元素 fiber
 */
 reconcileSingleElement(
     // 父fiber
@@ -136,6 +145,7 @@ reconcileSingleElement(
 ){
     const key = element.key;
     let child = currentFirstChild;
+    // 遍历旧节点
     while(child!==null){
         if(child.key === key){
             // 如果新节点的 key属性 与 旧节点的 key属性相等
@@ -187,7 +197,38 @@ reconcileSingleElement(
                     }
                     break;
             }
+            // 为旧节点的兄弟节点打上 Deletion 标记
+            deleteRemainingChildren(returnFiber, child);
+            break;
+        }else{
+            // 如果新旧节点的 key 不同，为旧节点打上 Deletion 标记
+            deleteChild(returnFiber, child)
         }
+        // 继续旧节点的下一个兄弟节点的遍历
+        child=child.sibling;
+    }
+    // 遍历旧节点之后，没有发现与新节点 key 和节点类型都相同的节点
+    if(element.type === REACT_FRAGMENT_TYPE){
+        // 如果新节点是 Fragment 
+        // 创建一个 Fragment fiber
+        const created = createFiberFromFragment(
+            element.props.children,
+            returnFiber.mode,
+            lanes,
+            element.key,
+        )
+        create.return = returnFiber;
+        return created;
+    }else{
+        // 如果新节点不是 Fragment,则创建一个普通的 fiber 节点
+        const created = createFiberFromElement(
+            element,
+            returnFiber.mode,
+            lanes
+        );
+        created.ref = coerceRef(returnFiber, currentFirstChild, element);
+        created.return = returnFiber;
+        return created;
     }
 }
 
@@ -204,6 +245,29 @@ placeSingleChild(
 }
 
 // 处理多节点
+/**
+    两次遍历
+    第一次遍历
+        遍历新节点 newChildren[newIdx] 与 oldFiber 进行 diff。如果新旧节点可复用，则复用 oldFiber,同时给 oldFiber 打上 Placement 更新标记。继续下一轮循环，newChildren[newIdx++] 与 oldFiber.sibling 的 diff。
+        如果新旧节点无法复用，
+            key 不同导致无法复用，则直接退出循环，
+            key 相同，节点类型不同导致无法复用，则给旧节点打上 Deletion 删除标记，根据新节点新生成 fiber 节点，并继续遍历
+
+      第一次循环结束后：
+        如果新节点 newChildren 遍历完了，如果还有剩余的 oldFiber,表示这些节点都将被删除，打上 Deletion 标记
+        如果新节点 newChildren 没有遍历完，但是 oldFiber，遍历完了，表示剩余的 newChildren 节点，都是新增节点，给剩余的新节点创建 fiber,打上 Placement 新增标记，同时将新生成的 fiber 节点加到 fiber 单向链表树中
+      
+      如果新旧节点都还有剩余，那么将进入第二轮遍历中
+
+    第二次遍历
+        通过旧节点 oldFiber, 生成一个以 key 属性或者 节点索引 index（key 属性不存在） 为键名，oldFiber 为键值的 Map 对象。
+
+        遍历新节点，使用新节点的 key 或索引 index 去 Map 中查找 oldFiber，
+          如果查找到，查看新旧节点类型是否相同。相同，则进行节点复用，不同，则返回 null。
+            可以复用，则给 Map 中删除当前 oldFiber
+            不可复用，则基于新节点创建一个新的 fiber 节点，继续下一轮遍历
+        遍历完后，对 Map 中剩余 oldFiber 节点打上 Deletion  删除标记
+*/
 reconcileChildrenArray(
     // 父 fiber 节点
     returnFiber,
@@ -235,13 +299,14 @@ reconcileChildrenArray(
             // 将 旧节点的兄弟节点 赋值给 nextOldFiber
             nextOldFiber = oldFiber.sibling;
         }
+        // 根据新旧节点 通过节点复用 产生一个 fiber 节点，通过节点复用，如果新旧节点无法复用，则返回 null
         /**
             分多种情况
             新节点为 文本节点，空标签，多节点，单节点，
             单节点时，
             文本节点时，
             多节点时，
-            如果新旧节点 key和 节点类型相同，则进行复用，否则创建一个新的 fiber 节点，
+            如果新旧节点 key和 节点类型相同，则进行复用
             如果新旧节点不可复用 则返回 null
         */ 
         const newFiber = updateSlot(
@@ -250,7 +315,7 @@ reconcileChildrenArray(
             newChildren[newIdx],
             lanes
         );
-        // 如果旧节点不可复用
+        // 如果旧节点不可复用，结束第一轮循环
         if(newFiber === null){
             // 当前旧节点不存在
             if(oldFiber === null){
@@ -283,7 +348,7 @@ reconcileChildrenArray(
         // 给旧节点中 未遍历完的节点打上 Deletion 删除标记
         deleteRemainingChildren(returnFiber, oldFiber);
     }
-
+    // 旧节点遍历完了，新节点还有剩余
     if(oldFiber === null){
         // oldFiber 遍历完了，newChildren 剩余的节点都是需要新插入的节点
         for(;newIdx < newChildren.length; newIdx++){
@@ -394,6 +459,8 @@ deleteChild(
     }
 }
 
+// 如果旧节点是文本节点，给旧节点的兄弟节点打上 Deletion标记，复用旧节点
+// 如果旧节点不是文本节点，给旧节点打上 Deletion 标记，生成新的 文本 fiber 节点
 reconcileSingleTextNode(
     // 父 fiber 节点
     returnFiber,
