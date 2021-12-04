@@ -1,6 +1,55 @@
 # React 17 DOM DIFF
 
-## 
+## DOM diff 总结
+
+> 先判断新节点是是否是 `Fragment（空标签）`,如果是空标签，则使用新节点的子节点 `children`
+
+1. 单节点 
+
+    > 单节点 `typeof child === 'object' && typeof child !== null`的节点
+
+    1. 获取新节点的 key 属性，遍历旧节点。`reconcileSingleElement()`
+    
+       1. 如果新旧节点的 `key 属性` 和 `element.tag 节点类型` 都相同，则进行节点复用。先给旧节点的兄弟节点打上 `Deletion 删除标记`，再通过旧 fiber 节点和新节点的 `props`，生成新的 fiber 节点，并设置新节点的父 fiber 节点，返回
+       2. 如果新旧节点的 `key 属性`不相等，则给当前旧节点打上 `Deletion 删除标记`，继续对比旧节点的兄弟节点 `fiber.sibling`。
+       3. 如果在旧节点中没有找到可复用的节点，那么根据新节点创建一个新的 fiber 节点，返回
+       4. 给返回的节点打上 `Placement 更新标记 (placeSingleChild())`(无论是通过`旧节点复用的 fiber 节点`或者是`新节点创建的 fiber 节点`)
+
+2. 文本节点
+
+    > 文本节点 `typeof child === 'string' || typeof child === 'number'`的节点
+
+    1. 如果旧节点也是文本节点，先给旧节点的兄弟节点打上 `Deletion 删除标记`，在通过旧节点和新节点复用产生一个 fiber 节点，返回
+    2. 如果旧节点不可复用，则给当前 fiber 节点及其兄弟节点都打上 `Deletion 删除标记`，然后通过新节点重新生成一个 fiber 节点，返回
+    3. 给返回的节点打上`Placement 更新标记(placeSingleChild())`(无论是通过`旧节点复用的 fiber 节点`还是`新节点创建的 fiber 节点`)
+
+3. 多节点
+
+    > 多节点`isArray(child)`
+
+    > 通过两轮遍历
+
+    1. 第一轮遍历
+
+      1. 遍历新节点
+
+        1. 通过 `newChild[newIdx]`和`oldFiber`比对，
+        
+          1. 新节点是文本节点`typeof newChild ==='string' || typeof newChild === 'number'`。
+          
+            * 如果 `key 属性相同`，则进行旧节点复用，通过旧 fiber 节点和新节点内容，生成一个 fiber 节点
+            * 如果 `key 不相同`,则`直接返回 null`
+
+          2. 新节点是单节点`typeof newChild === 'object' && newChild !== null`
+
+            * 如果新旧节点的 `key` 和 `节点类型`都相等，则进行节点复用，
+            * 如果新旧节点的 `key 相等`，但是`节点类型不等`，则`直接返回 null`
+
+          3. 新节点是数组，`isArray(newChild)`
+
+            * 如果新旧节点 
+
+## React 17.0.2 源码 /package/react-reconciler/src/ReactChildFiber.new.js
 
 ```js
 // React DOM diff 的入口函数
