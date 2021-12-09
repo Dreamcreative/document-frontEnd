@@ -2,6 +2,7 @@
 
 > Redux 本身只处理`同步的action`，如果想要处理`异步的 action`，那么需要使用 `Redux-thunk`、`Redux-promise`、`Redux-saga` 等中间件
 
+> Redux 状态管理于 React 之间没有关系。Redux 支持 React、Angular、Ember、jQuery甚至是 JavaScript
 
 ## 三大原则
 
