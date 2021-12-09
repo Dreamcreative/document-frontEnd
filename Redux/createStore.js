@@ -31,9 +31,18 @@ module.exports = function createStore(reducer, initState, enhancer) {
     function subscribe(listener) {
         listeners.push(listener)
     }
+    // 替换 reducer
+    function replaceReducer(nextReducer) {
+        reducer = nextReducer;
+        // 调用一次 dispatch 将 state 进行替换
+        dispatch({ type: Symbol() })
+    }
+    // 当 initState 没有传入时，调用 getState() 没有值，这里手动调用一次 dispatch 可以初始化 reducer
+    dispatch({ type: Symbol() })
     return {
         getState,
         subscribe,
-        dispatch
+        dispatch,
+        replaceReducer
     }
 };
