@@ -8,11 +8,11 @@
 
 1. 单一数据流
 
-  > 整个应用的`全局 state` 被存储在一个对象中，并且是`唯一的`
+    > 整个应用的`全局 state` 被存储在一个对象中，并且是`唯一的`
 
 2. state只读
 
-  > 唯一改变 state 的方式，就是触发 `action`, action 是用于描述已发生事件的普通对象
+    > 唯一改变 state 的方式，就是触发 `action`, action 是用于描述已发生事件的普通对象
 
 ```js
 store.dispatch({
@@ -36,8 +36,6 @@ function visibilityFilter(state = 'SHOW_ALL', action) {
 }
 ```
 
-
-
 ## 名词
 
 1. [createStore(reducer, state, enhance)](./createStore.js) 创建一个 store
@@ -51,7 +49,7 @@ function visibilityFilter(state = 'SHOW_ALL', action) {
     > 返回值
 
     1. getState():获取 state 值
-    2. subscribe(listener)：订阅函数
+    2. subscribe(listener)：订阅函数, 返回一个解除订阅函数
     3. dispatch(action)：触发 action 更新state
     4. replaceReducer(reducer): 修改 reducer 函数
 

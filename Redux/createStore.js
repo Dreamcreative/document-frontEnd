@@ -29,7 +29,12 @@ module.exports = function createStore(reducer, initState, enhancer) {
     }
     // 添加监听函数
     function subscribe(listener) {
-        listeners.push(listener)
+        listeners.push(listener);
+
+        return function unsubscribe() {
+            const index = listeners.indexOf(listener);
+            listeners.splice(index, 1);
+        }
     }
     // 替换 reducer
     function replaceReducer(nextReducer) {
