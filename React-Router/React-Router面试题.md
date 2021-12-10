@@ -1,0 +1,129 @@
+# React-Router 面试题
+
+1. `React-Router` 怎么获取 URL 参数
+
+```js
+// 使用 useParams
+useParams(){
+  // 通过 上下文获取 匹配路由
+  let {matches} = React.useContext(RouteContext);
+  // 获取匹配到的最后一个路由信息
+  let routeMatch = matches[matches.length -1 ];
+  // 返回当前路由的 params
+  return matches? routeMatch.params: {};
+}
+```
+
+2. `React-Router` 在 history 模式中 push 和 replace 有什么区别
+
+    > [push、replace](./README.md)
+
+    > push: 是添加一个记录到历史堆栈的最后
+
+    > replace: 是替换历史堆栈中的某一条记录
+
+3. `React-Router` `<Router>` 组件有几种类型
+
+    1. BrowserRouter 使用 `history 库`的 `createBrowserHistory()`,监听 `popstate`变化
+    2. HashRouter 使用 `history 库`的 `createHashHistory()`，对于支持 `popstate`的环境，监听 `popstate`，对于不支持`popstate`的环境，监听`hashchange`
+    3. MemoryRouter 使用 `history 库`的 `createMemoryHistory()`,监听`popstate` ，在 `无浏览器环境`或者 `React Native` 中使用
+
+4. `React-Router` 怎么设置重定向
+
+    1. 通过 `<Redirect> 组件`
+    2. history.replace(to, state)
+
+5. `React-Router` 怎么获取历史对象
+
+    1. React-Router v5 使用 useHistory(),获取历史对象
+    2. React-Router v6 使用 useNavigate()，获取历史对象
+
+```js
+useNavigate(){
+  let {basename, navigator} = React.useContext(NavigationContext);
+  let {matches} = React.useContext(RouteContext);
+  let {pathname: locationPathname} = useLocation();
+  let navigate: NavigateFunction = React.useCallback(
+    (to: , options: { replace, state} = {}) => {
+      if (!activeRef.current) return;
+
+      if (typeof to === "number") {
+        navigator.go(to);
+        return;
+      }
+
+      let path = resolveTo(
+        to,
+        JSON.parse(routePathnamesJson),
+        locationPathname
+      );
+
+      if (basename !== "/") {
+        path.pathname = joinPaths([basename, path.pathname]);
+      }
+
+      (!!options.replace ? navigator.replace : navigator.push)(
+        path,
+        options.state
+      );
+    },
+    [basename, navigator, routePathnamesJson, locationPathname]
+  );
+  return navigate;
+}
+```
+
+6. `React-Router` switch 有什么用
+
+7. `React-Router` 实现原理
+
+    > 通过 `history 库` 实现 `BrowerRouter`、`HashRouter`、`MemoryRouter`
+
+8. `React-Router` 路由有几种模式
+
+    1. history 模式
+    2. hash 模式
+    3. memory 模式
+
+9. `React-Router` react 路由和普通路由有什么区别
+
+    > React 路由是前端路由，普通路由是后端路由
+
+    > React 路由不管是 history 还是 hash 模式，都是监听事件（`popstate/hashchange`）变化，实现组件切换。页面的文件始终没有变化，
+
+10. `React-Router` react 路由的优缺点
+
+11. `React-Router` react 路由是什么
+
+> 纯前端路由，根据 url `地址上的 hash` 或 `path 路径`的变化，切换页面组件展示。使页面不用刷新，提升用户体验
+
+12. `React-Router` `<Link>`和`<a>` 有什么区别
+
+    1. Link 组件拦截了浏览器的默认行为
+    2. Link 组件最终渲染为 `<a>`标签
+
+```js
+Link = React.forwardRef(
+  function LinkWithRef(
+    { onClick, reloadDocument, replace = false, state, target, to, ...rest },
+    ref
+){
+  let href = useHref(to);
+  let internalOnclick = useLinkClickHandle(to, {replace, state, target});
+  function handleClick(e){
+    if(onClick) onClick(e);
+    if(!e.defaultPrevented && !e.reloadDocument){
+      internalOnClick(e);
+    }
+  }
+  return (
+    <a
+    {...rest}
+    href={href}
+    onClick={handleClick}
+    ref={ref}
+    target={target}
+    />
+  )
+}
+```
