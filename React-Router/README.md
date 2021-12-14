@@ -2,17 +2,17 @@
 
 ## history 库 v6.0.2 -- 专注于记录路由 history 状态
 
-  > `React-Router`离不开 `history 库`
+  > `React-Router` 离不开 `history 库`
 
   > `history 库` 分为 三种路由模式
 
-1. history 模式：在`页面的 url`上存储 location 信息，通过`popstate`监听路由变化 -- 对应 `MemoryRouter`
+1. history 模式：在`页面的 url` 上存储 location 信息，通过 `popstate` 监听路由变化 -- 对应 `MemoryRouter`
   ```js
   createBrowserHistory(){
     window.addEventListener('popstate', handlePop);
   }
   ```
-2. hash 模式: 在`window.history.hash`中存储 location 信息，通过`popstate`监听路由变化，在`IE11 和 低版本不支持 popstate 的浏览器中`使用 `hashchange`监听路由变化 -- 对应`HashRouter`
+2. hash 模式： 在 `window.history.hash` 中存储 location 信息，通过 `popstate` 监听路由变化，在 `IE11 和 低版本不支持 popstate 的浏览器中`使用 `hashchange` 监听路由变化 -- 对应 `HashRouter`
   ```js
   createHashHistory(){
     <!-- 对于那些支持 popstate 的环境，监听 popstate  -->
@@ -27,7 +27,7 @@
     });
   }
   ```
-3. memory 模式：在内存中存储了 location 信息，为了`无浏览器环境，和 React Native`设计 -- 对应`MemoryRouter`
+3. memory 模式：在内存中存储了 location 信息，为了`无浏览器环境，和 React Native` 设计 -- 对应 `MemoryRouter`
 
 ```js
 // 三种路由返回值，基本相同 history ,memory, hash 模式

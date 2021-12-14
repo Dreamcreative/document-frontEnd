@@ -24,9 +24,9 @@ useParams(){
 
 3. `React-Router` `<Router>` 组件有几种类型
 
-    1. BrowserRouter 使用 `history 库`的 `createBrowserHistory()`,监听 `popstate`变化
-    2. HashRouter 使用 `history 库`的 `createHashHistory()`，对于支持 `popstate`的环境，监听 `popstate`，对于不支持`popstate`的环境，监听`hashchange`
-    3. MemoryRouter 使用 `history 库`的 `createMemoryHistory()`,监听`popstate` ，在 `无浏览器环境`或者 `React Native` 中使用
+    1. BrowserRouter 使用 `history 库`的 `createBrowserHistory()`,监听 `popstate` 变化
+    2. HashRouter 使用 `history 库`的 `createHashHistory()`，对于支持 `popstate` 的环境，监听 `popstate`，对于不支持 `popstate` 的环境，监听 `hashchange`
+    3. MemoryRouter 使用 `history 库`的 `createMemoryHistory()`,监听 `popstate`，在 `无浏览器环境`或者 `React Native` 中使用
 
 4. `React-Router` 怎么设置重定向
 
