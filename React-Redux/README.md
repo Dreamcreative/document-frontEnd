@@ -93,7 +93,7 @@ function finalPropsSelectorFactory(
     options
   )
 }
-通过闭包返回一个 pureFinalPropsSelector 函数。
+// 通过闭包返回一个 pureFinalPropsSelector 函数。
 // 如果是第一次组件渲染，就直接合并 ownProps, mapStateToProps, mapDispatchToProps 形成真正的 props
 // 如果不是第一次组件渲染，就判断是 state 改变还是 props 改变，针对变化的属性，重新生成对应的 props,最终合并到真正的 props 上
 function pureFinalPropsSelectorFactory(
