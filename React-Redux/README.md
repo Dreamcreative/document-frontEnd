@@ -1,5 +1,200 @@
 # React-Redux v7.2.6
 
+## Provider 创建 Subscription，context 保存上下文
+
+1. 首先创建一个 contextValue,里面包含一个创造出来的父级 `Subscription - 根级订阅器`，和 redux 提供的 store
+2. 通过 React 上下文 context 将 contextValue 传递给子孙组件
+
+## Subscription 订阅消息，发布更新
+
+1. 搜集所有被 connect 包裹的组件的更新函数 `onstatechange`,然后形成一个 `callback` 链表，再由父级 `Subscription` 统一派发执行更新
+2. Subscription 首先通过 `trySubscribe` 发起订阅模式，如果存在父级订阅者，就把自己的更新函数 `handleChangeWrapper`，传递给父级订阅者，然后父级有 `addNestedSub` 方法将此时的更新函数添加到当前的 `listeners` 中。如果没有父级元素（Provider 的情况），就将此更新函数添加到 `store.subscribe` 中，而 `notifyNestedSubs` 方法会通知 `listeners` 中的 `notify` 方法来触发更新。被 connect 包裹的组件生成的 `Subscription` 会将更新自身的方法 `handleChangeWrapper` 传递父级 parentSub 的 `Subscription`，来统一通知 connect 组件更新
+3. 大致模型： `state 更改` -> `store.subscribe` -> 触发 `Provider` 的 `Subscription` 的更新函数(也就是 `notifyNestedSub`)-> 通知 `listeners.notify()`-> 通知每个被 connect 容器组件的更新 -> `callback` 执行 -> 触发子组件 `Subscriptiion` 的更新函数 -> 触发子 `onstatechange` 更新函数更新
+
+## createListenerCollection
+
+> 生成一个订阅集合
+
+1. 收集订阅：以链表的形式收集对应的 listeners，每一个 Subscription 的 handleChangeWrapper 函数（更新函数）
+2. 派发更新：通过 batch 方法（React-dom 中的 unstable_batchedUpdates）来进行批量更新。将一次事件循环中的所有更新一起批量处理到一个渲染过程中
+
+## Provider 总结
+
+1. `React-Redux` 中的 Provider作用，通过 React 的 context 传递 subscription 和 Redux 中的 store,并且建立一个最顶部的根 Subscription
+2. Subscription 的作用：起到发布订阅作用，一方面订阅 connect 包裹组件的更新函数，一方面通过 `store.subscribe` 统一派发更新
+3. Subscription 如果存在父级，则把自身的更新函数传递给父级 Subscription ，如果不存在父级，则将自身的更新函数存储到 `store.subscibe`
+
+## connect 究竟做了什么
+
+### connect 的用法
+
+```js
+const mapStateToProps = (state)=>({todos: state.todos});
+const mapDispatchToProps = dispatch => {
+  return {
+    increment: () => dispatch({ type: 'INCREMENT' }),
+    decrement: () => dispatch({ type: 'DECREMENT' }),
+    reset: () => dispatch({ type: 'RESET' })
+  }
+}
+/**
+  mapStateToProps 就是 Redux 中的 state, 需要传入 包裹组件的 props 属性
+  mapDispatchToProps 就是 Redux 中的 reducer 修改 state 的 纯函数
+  mergeProps 如果没有这个参数，会默认进行合并传入的属性 {...ownProps, ...stateProps, ...dispatchProps}
+  options {
+    context: object, 自定义的上下文，不使用 React-Redux 提供的 context
+    pure: boolean, 是否缓存更新。默认为 true ，默认开启缓存模式，每次更新时，会进行浅比较 state 和 props，如果有变化就重新渲染组件，无变化就不渲染组件；为 false时，无论 state /props 是否变化，都会重新渲染组件。相当于 PureComponent
+    areStateEqual?: function , pure 为 true 时，比较 state 是否相等
+    areOwnPropsEqual?: function , pure 为 true 时，比较 props 是否相等
+    areStatePropsEqual?: function , pure 为 true 时，比较 mapStateToProps 是否相等
+    areMergedPropsEqual?: function , pure 为 true 时，比较 经过合并后的 mergeProps 是否相等
+    forwardRef?: boolean , 当为 true 时，可以通过 ref 来获取被 connect 包裹的组件实例
+  }
+*/
+connect(mapStateToProps?, mapDispatchToProps?, mergeProps?, options?)
+```
+
+### connect 逻辑
+
+1. initMapStateToProps: 用于形成真正的 MapStateToProps 函数，将 store 中的 state 映射到 props 
+2. initMapDispatchToProps：用于形成真正的 MapDispatchToProps ,将 dispatch 和自定义的 dispatch 注入到 props
+3. initMergeProps: 用于形成真正的 MergeProps，合并业务组件的 props,state，映射的 props, dispatch 映射的 props
+
+> mergeProps 函数非常重要。这个函数判断了整个 connect 是否更新组件的关键所在。
+
+```js
+// /src/connect/mergeProps.js
+// 这个函数返回一个新的合并后的对象，作为新的 props 传入业务组件
+function defaultMergeProps(stateProps, dispatchProps, ownProps){
+  return {...stateProps, ...dispatchProps, ...ownProps};
+}
+```
+
+### selectorFactory 形成新的 props 传递到被 connect 包裹的组件上
+
+```js
+// 得到真正connect 
+function finalPropsSelectorFactory(
+  dispatch,
+  { initMapStateToProps, initMapDispatchToProps, initMergeProps, ...options }
+) {
+  // mapStateToProps mapDispatchToProps mergeProps 为真正connect 经过一层代理的 proxy 函数
+  const mapStateToProps = initMapStateToProps(dispatch, options)
+  const mapDispatchToProps = initMapDispatchToProps(dispatch, options)
+  const mergeProps = initMergeProps(dispatch, options)
+
+  const selectorFactory = options.pure ? pureFinalPropsSelectorFactory : impureFinalPropsSelectorFactory
+   // 返回一个 函数用于生成新的 props 
+  return selectorFactory(
+    mapStateToProps,
+    mapDispatchToProps,
+    mergeProps,
+    dispatch,
+    options
+  )
+}
+通过闭包返回一个 pureFinalPropsSelector 函数。
+// 如果是第一次组件渲染，就直接合并 ownProps, mapStateToProps, mapDispatchToProps 形成真正的 props
+// 如果不是第一次组件渲染，就判断是 state 改变还是 props 改变，针对变化的属性，重新生成对应的 props,最终合并到真正的 props 上
+function pureFinalPropsSelectorFactory(
+  mapStateToProps,
+  mapDispatchToProps,
+  mergeProps,
+  dispatch,
+  {areStatesEqual, areOwnPropsEqual, areStatePropsEqual}
+  ){
+
+}
+```
+```js
+// /src/components/connectAdvanced.js
+// 返回真正用于包裹 connect 传入组件的 HOC 高阶组件
+function connectAdvanced(
+  selectorFactory, // 每次 props,state改变执行 ，用于生成新的 props。
+  {
+    getDisplayName = name => `ConnectAdvanced(${name})`,
+    //可能被包装函数（如connect（））重写
+    methodName = 'connectAdvanced',
+    //如果定义了，则传递给包装元素的属性的名称，指示要呈现的调用。用于监视react devtools中不必要的重新渲染。
+    renderCountProp = undefined,
+    shouldHandleStateChanges = true,  //确定此HOC是否订阅存储更改
+    storeKey = 'store',
+    withRef = false,
+    forwardRef = false, // 是否 用 forwarRef 模式
+    context = ReactReduxContext,// Provider 保存的上下文
+    ...connectOptions
+  } = {}
+){
+  return function wrapWithConnect(WrappedComponent){
+    ...
+  }
+}
+```
+
+### wrapWithConnect connectAdvanced 返回的高阶组件，对传入的业务组件做了一些列的增强
+
+1. 声明负责更新的 ConnectFunction 无状态组件。和负责合并 props 的 createChildSelector 方法
+2. 如果 pure 属性为 true，则使用  `React.memo`包裹，减少组件不必要的渲染，会像 PureComponent 一样对 props 进行浅比较
+3. 如果 connect 的 options 有 forwardRef 属性，将组件使用 `React.forwardRef` 处理，使得可以访问到业务组件的实例对象
+4. 使用 `hoistStatics(Connect, WrappedComponent)`，把业务组件的静态方法/属性，继承到高阶组件上。因为 高阶组件包装业务组件的过程中，如果不对静态方法/属性特殊处理，是不会被包装后的组件访问到的。
+
+### ConnectFunction 负责HOC 的更新
+
+1. 判断是否开启 forwardRef 模式，通过判断是否更新真正的合并 props 函数 childPropsSelector
+2. 创建子代 Subscription,层层传递 context，如果 connect 具有第一个参数 mapStateToProps,那么创建一个子的 Subscription 并与上层 Provider 的 Subscription建立关联
+3. 保存信息，执行副作用钩子。判断 props/ state是否发生变化，从而确定是否更新 HOC，进一步更新组件。组件更新后，当前组件的订阅函数 `onStateChange` 绑定给父级的 subscription,进行层层订阅。为了防止渲染后，state 内容已经改变，所以先执行一次 `checkForUpdates`
+
+![React-Redux层层订阅模型图](/images/React-Redux/React-Redux层层订阅模型图.jpeg)
+
+```js
+// 通过调用 childPropsSelector，来形成新的 props,然后判断之前的 props 与当前新的 props 是否相等，
+// 相等，则不需要更新，同时通知子代容器组件，检查是否需要更新
+// 不等，则证明 store.state 发生变化，则立即触发组件的更新
+const checkForUpdates = () => {
+    if (didUnsubscribe) {
+      //如果写在了
+      return
+    }
+     // 获取 store 里state
+    const latestStoreState = store.getState()
+    let newChildProps, error
+    try {
+      /* 得到最新的 props */
+      newChildProps = childPropsSelector(
+        latestStoreState,
+        lastWrapperProps.current
+      )
+    } 
+    //如果新的合并的 props没有更改，则此处不做任何操作-层叠订阅更新
+    if (newChildProps === lastChildProps.current) { 
+      if (!renderIsScheduled.current) {  
+        notifyNestedSubs() /* 通知子代 subscription 触发 checkForUpdates 来检查是否需要更新。*/
+      }
+    } else {
+      lastChildProps.current = newChildProps
+      childPropsFromStoreUpdate.current = newChildProps
+      renderIsScheduled.current = true
+      // 此情况 可能考虑到 代码运行到这里 又发生了 props 更新 所以触发一个 reducer 来促使组件更新。
+      forceComponentUpdateDispatch({
+        type: 'STORE_UPDATED',
+        payload: {
+          error
+        }
+      })
+    }
+  }
+```
+
+![React-Redux层层更新模型图](/images/React-Redux/React-Redux层层更新模型图.jpeg)
+
+## connect 流程总结
+
+> 订阅流程：如果被 connect包裹，并且具有第一个参数。首先通过 context 获取最近的父 subscription,然后创建一个当前 subscription,并且与父级的 subscription 建立连接。当第一次 HOC 容器组价挂载完成后，在 useEffect里，进行订阅，将自己的订阅函数 `checkForUpdates`作为回调，通过， trySubscribe 和 `parentSub.addNestedSub`，加入到父级 subscription的 listeners 订阅集合中。`完成整个订阅流程`
+
+> 更新流程：当 state 改变时，会触发最顶级订阅器（Provider 过程参数的 Subscription）的 `store.subscribe`，然后触发更新`checkForUpdates`，然后`checkForUpdates`根据 mapStateToProps, mergeProps 等操作，验证组件是否需要发起订阅。props 是否改变，并更新。如果发生改变，则触发业务组件的更新，如果没有发生改变，那个通知当前 subscription 的listeners 检查是否更新，层层向下检查被 connect 包裹的子组件是否需要更新。`完成整个更新流程`
+
+## 问题 - 源码
+
 1. Provider 是怎么把 store 放入 context 中的
 
 > Provider 将数据由顶层注入
@@ -455,3 +650,4 @@ function subscribeUpdates(
 ## 参考
 
 * [带着问题看 React-Redux 源码（一万四千字长文预警）](https://zhuanlan.zhihu.com/p/80655889)
+* [「 源码解析 」 一文吃透 react-redux 源码（useMemo 经典源码级案例）](https://cloud.tencent.com/developer/article/1830553)
