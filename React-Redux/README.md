@@ -185,7 +185,7 @@ const checkForUpdates = () => {
   }
 ```
 
-![React-Redux层层更新模型图](/images/React-Redux/React-Redux层层更新模型图.jpeg)
+![React-Redux层层更新模型图](/images/React-Redux/React-Redux整个更新模型图.jpeg)
 
 ## connect 流程总结
 
