@@ -8,7 +8,7 @@
 ## Subscription 订阅消息，发布更新
 
 1. 搜集所有被 connect 包裹的组件的更新函数 `onstatechange`,然后形成一个 `callback` 链表，再由父级 `Subscription` 统一派发执行更新
-2. Subscription 首先通过 `trySubscribe` 发起订阅模式，如果存在父级订阅者，就把自己的更新函数 `handleChangeWrapper`，传递给父级订阅者，然后父级有 `addNestedSub` 方法将此时的更新函数添加到当前的 `listeners` 中。如果没有父级元素（Provider 的情况），就将此更新函数添加到 `store.subscribe` 中，而 `notifyNestedSubs` 方法会通知 `listeners` 中的 `notify` 方法来触发更新。被 connect 包裹的组件生成的 `Subscription` 会将更新自身的方法 `handleChangeWrapper` 传递父级 parentSub 的 `Subscription`，来统一通知 connect 组件更新
+2. Subscription 首先通过 `trySubscribe` 发起订阅模式，如果存在父级订阅者，就把自己的更新函数 `handleChangeWrapper`，传递给父级订阅者，然后父级由 `addNestedSub` 方法将此时的更新函数添加到当前的 `listeners` 中。如果没有父级元素（Provider 的情况），就将此更新函数添加到 `store.subscribe` 中，而 `notifyNestedSubs` 方法会通知 `listeners` 中的 `notify` 方法来触发更新。被 connect 包裹的组件生成的 `Subscription` 会将更新自身的方法 `handleChangeWrapper` 传递父级 parentSub 的 `Subscription`，来统一通知 connect 组件更新
 3. 大致模型： `state 更改` -> `store.subscribe` -> 触发 `Provider` 的 `Subscription` 的更新函数(也就是 `notifyNestedSub`)-> 通知 `listeners.notify()`-> 通知每个被 connect 容器组件的更新 -> `callback` 执行 -> 触发子组件 `Subscriptiion` 的更新函数 -> 触发子 `onstatechange` 更新函数更新
 
 ## createListenerCollection
@@ -58,7 +58,7 @@ connect(mapStateToProps?, mapDispatchToProps?, mergeProps?, options?)
 
 1. initMapStateToProps: 用于形成真正的 MapStateToProps 函数，将 store 中的 state 映射到 props 
 2. initMapDispatchToProps：用于形成真正的 MapDispatchToProps ,将 dispatch 和自定义的 dispatch 注入到 props
-3. initMergeProps: 用于形成真正的 MergeProps，合并业务组件的 props,state，映射的 props, dispatch 映射的 props
+3. initMergeProps: 用于形成真正的 MergeProps，合并业务组件的 props,state 映射的 props, dispatch 映射的 props
 
 > mergeProps 函数非常重要。这个函数判断了整个 connect 是否更新组件的关键所在。
 
@@ -131,7 +131,7 @@ function connectAdvanced(
 }
 ```
 
-### wrapWithConnect connectAdvanced 返回的高阶组件，对传入的业务组件做了一些列的增强
+### wrapWithConnect connectAdvanced 返回的高阶组件，对传入的业务组件做了一系列的增强
 
 1. 声明负责更新的 ConnectFunction 无状态组件。和负责合并 props 的 createChildSelector 方法
 2. 如果 pure 属性为 true，则使用  `React.memo`包裹，减少组件不必要的渲染，会像 PureComponent 一样对 props 进行浅比较
@@ -189,7 +189,7 @@ const checkForUpdates = () => {
 
 ## connect 流程总结
 
-> 订阅流程：如果被 connect包裹，并且具有第一个参数。首先通过 context 获取最近的父 subscription,然后创建一个当前 subscription,并且与父级的 subscription 建立连接。当第一次 HOC 容器组价挂载完成后，在 useEffect里，进行订阅，将自己的订阅函数 `checkForUpdates`作为回调，通过， trySubscribe 和 `parentSub.addNestedSub`，加入到父级 subscription的 listeners 订阅集合中。`完成整个订阅流程`
+> 订阅流程：如果被 connect包裹，并且具有第一个参数。首先通过 context 获取最近的父 subscription,然后创建一个当前 subscription,并且与父级的 subscription 建立连接。当第一次 HOC 容器组件挂载完成后，在 useEffect里，进行订阅，将自己的订阅函数 `checkForUpdates`作为回调，通过， trySubscribe 和 `parentSub.addNestedSub`，加入到父级 subscription的 listeners 订阅集合中。`完成整个订阅流程`
 
 > 更新流程：当 state 改变时，会触发最顶级订阅器（Provider 过程参数的 Subscription）的 `store.subscribe`，然后触发更新`checkForUpdates`，然后`checkForUpdates`根据 mapStateToProps, mergeProps 等操作，验证组件是否需要发起订阅。props 是否改变，并更新。如果发生改变，则触发业务组件的更新，如果没有发生改变，那个通知当前 subscription 的listeners 检查是否更新，层层向下检查被 connect 包裹的子组件是否需要更新。`完成整个更新流程`
 
