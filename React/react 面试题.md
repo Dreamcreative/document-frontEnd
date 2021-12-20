@@ -235,6 +235,7 @@ import hoistNonReactStatic from 'hoist-non-react-statics';
 
 function enhance(wrapppedComponent){
   class Enhance extends React.Component{...}
+  // 将静态属性进行复制到 hoc 返回的组件
   hoistNonReactStatic(Enhance, wrapppedComponent);
   Enhance.displayName = 'enhance';
   return Enhance;
