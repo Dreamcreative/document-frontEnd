@@ -1,117 +1,92 @@
 # Window
 
 ## IntersectionObserver(callback, options)
-异步检测目标元素与祖先元素的相交情况
 
-异步更新，
-在react fiber中，属于优先级最低的更新
+> 异步检测目标元素与祖先元素的相交情况
+
+> 异步更新，在 `React fiber`中，属于优先级最低的更新
 
 ### 使用场景
 
-#### 1. 懒加载
+  1. 懒加载
+  2. 无线滚动
 
-#### 2. 无限滚动
+### methods(prototype)
 
-#### 。。。
-
-### methods( prototype)
-
-#### observe
-
-##### 作用
-
-###### 监听目标节点Element
-
-##### Observer.observe(element)
-
-#### unobserve
-
-##### 作用
-
-###### 取消目标节点Element的监听
-
-##### Observer.unobserve(element)
-
-#### disconnect
-
-##### 作用
-
-###### 取消所有监听
-
-##### Observer.disconnect()
-
-#### takeRecords
-
-##### 返回所有观察目标IntersectionObserverEntry的对象数组
+  1. observe(element):监听目标节点
+  2. unobserve(element):取消目标节点的监听
+  3. disconnect():  取消所有监听
+  4. takeRecords(): 返回所有观察目标 IntersectionObserverEntry 的对象数组
 
 ### 兼容性
 
-#### 解决兼容
+![IntersectionObserver兼容性](https://kityminder-img.gz.bcebos.com/bcfcfb6299dde074b5e4bd97c8da9394a7ed9d26)
 
-##### intesection-observer,js
+> 解决兼容性
 
-##### 实现
+```js
+// https://github.com/w3c/IntersectionObserver/tree/main/polyfill
+// intesection-observer.js
+// 判断window 中是否存在 IntersectionObserver
+// 判断window 中是否存在 IntersectionObserverEntry
+// 判断 window.IntersectionObserverEntry.prototype 中是否存在 intersectionRatio
+// 如果不存在 则使用 MutationObserver 进行监听
 
-###### 1. 判断window中是否存在
-IntersectionObserver,
- IntersectionObserverEntry,
-intersectionRatio是否存在于IntersectionObserverEntry.prototype，
+if ('IntersectionObserver' in window &&
+    'IntersectionObserverEntry' in window &&
+    'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
 
-如果不存在则使用MutationObserver进行监听
-
-###### 2. 添加resize, scroll监听事件
-
-###### 3. 使用 throttle 节流来延迟检测元素是否相交
+  // Minimal polyfill for Edge 15's lack of `isIntersecting`
+  // See: https://github.com/w3c/IntersectionObserver/issues/211
+  if (!('isIntersecting' in window.IntersectionObserverEntry.prototype)) {
+    Object.defineProperty(window.IntersectionObserverEntry.prototype,
+      'isIntersecting', {
+      get: function () {
+        return this.intersectionRatio > 0;
+      }
+    });
+  }
+  return;
+}
+```
 
 ### IntersectionObserverEntry
 
-#### 从属于 IntersectionObserver接口
+> 从属于 IntersectionObserver 接口。
 
-#### 描述目标元素与其根元素的相交状态
+> 描述目标元素与其根元素的相交状态
 
-### 可选的 options配置
+### 可选的 option 配置
 
-#### root: 根节点，为undefined、null时，默认为window
-
-#### rootMargin: 根元素的外边距，类似于css margin属性
-
-#### threshold:目标元素与根元素的相交程度 数组 0-1的值,[0, 0.5, 1]。
-只有当目标元素与根元素相交为0、0.5、1时，会触发callback
+  1. root：根节点，为 undefined、null时，默认为 window
+  2. rootMargin: 根元素的外边距，类似于 `css margin` 属性
+  3. threshold: 目标元素与根元素的相交程度，`数组 0-1`，[0,0.5,1],当目标元素与根元素相交为 0、0.5、1时，会触发 callback
 
 ## MutationObserver(callback)
 
-异步更新
+> 异步更新
 
 ### 特点
 
-#### 1. 等待DOM操作完成后，异步触发，为了应对频繁的DOM变动
-
-#### 2. 所有的DOM变化添加到一个数组，批量处理，而不是一条条处理
-
-#### 3. 可以同时监听DOM的所有类型变动，也可以值监听一种类型变动
+  1. 等待DOM操作完成后，异步触发，为了应对频繁的DOM变动
+  2. 所有的DOM变化添加到一个数组，批量处理，而不是一条条处理
+  3. 可以同时监听DOM所有类型变动，也可以只监听一种类型变动
 
 ### 作用
 
-#### 提供了监听DOM树所做更改的能力
+> 提供了监听 DOM 数所做更改的能力
 
 ### methods
 
-#### disconnect：解除所有元素监听
+  1. observe(element, options):监听元素
 
-#### observe(element, options): 监听元素
+    * element:目标元素
+    * options：需要监听目标元素那些类型变化
 
-##### element: 需要监听的目标元素
+      1. `attributeFilter <[] |null>`：需要监听的属性名称的数组，无默认值
+      2. `attributes<boolen>`：设置为 true 表示监听对象的属性变更
+      3. `characterData`：设置为true 表示监听对象的字符变更，无默认值
+      4. `childList <boolen>`:设置为 true,表示监听目标对象节点（如果 subtree 为 true,则包含子孙节点）的删除、添加
+      5. `subtree<boolean>`:设置为 true,表示监听范围扩大至目标节点的所有节点
 
-##### options: 需要监听目标元素哪些类型变化
-
-###### attributeFilter <[] |null>： 需监听的属性名称的数组，无默认值
-
-###### attributes<boolen>: 设置为true表示观察监听对象的属性变更
-
-###### characterData：设置为true, 表示观察监听对象的字符变更,无默认值
-
-###### childList <boolen>: 设置为true,表示监听目标对象节点(如果subtree为true,则包含子孙节点)的删除、添加。
-
-###### subtree<boolen>: 设置为true, 表示将监听范围扩大至目标节点的所有节点
-
-#### takeRecords: 从MutationObserver监听对象中删除所有待处理的通知
+  2. takeRecords: 从 MutationObserver 监听对象中删除所有待处理的通知
