@@ -59,10 +59,18 @@
 > HTML5 提供了两种客户端存储方式
 
   * localStorage: 没有时间限制的数据存储，除非手动删除
-  * sessionStroage: 也能够存储数据，但是当标签页关闭之后，数据会被删除
+  * sessionStorage: 也能够存储数据，但是当标签页关闭之后，数据会被删除
 
 7. 其他
 
   * 拖放：`<img draggable="true">`
   * canvas: `<canvas id="myCanvas" width="200" height="100"></canvas>`
   * svg:可伸缩矢量图形
+
+> 总结
+
+  1. 新增语义化标签 `<header>`、`<footer>`、`<asider>`、`<nav>`、`<artical>`、`<section>`
+  2. 音频`<audio>`、视频`<video>`
+  3. 新增客户端存储 localStorage、sessionStorage
+  4. canvas、svg(矢量图)、websocket(持久连接)
+  5. input标签新增属性 placeholder、autocomplete、autofocus、required
