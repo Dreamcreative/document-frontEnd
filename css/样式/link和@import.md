@@ -8,7 +8,45 @@
 2. 加载顺序区别
 
 - link 标签引入的 css 被同时加载
-- @import 引入的 css 会等到页面加载完毕后加载
+- @import 在大多数情况下是并行下载的，只是不会与附表及其可能包含的任何 css 并行下载
+
+> 第一个例子：在 `parent.css` 样式表中 `@import`引入的 css 都是`并行加载的`。并且同享相同的 TCP 链接
+
+```html
+<link media="screen" rel="stylesheet" type="text/css" href="parent.css" />
+
+<!-- parent.css -->
+@import url('child1.css');
+@import url('child2.css');
+@import url('child3.css');
+@import url('child4.css');
+```
+
+> 第二个例子：`@import`嵌入在 HTML `<style></style>`标签中，也是`并行加载的，只是加载顺序随机`
+
+```html
+<style>
+  @import url('child1.css');
+  @import url('child2.css');
+  @import url('child3.css');
+  @import url('child4.css');
+</style>
+```
+
+> 在第一个例子中，如果`parent.css`中只是引入css,而没有其他 css ,`@import`会立即加载。但是如果 `parent.css`中除了引入其他css 外，还有其他的css 时，这时 `@import`会等待其他css 解析下载完成之后才会开始加载，产生`阻塞`行为
+
+```css
+/* 这种具有 其他 css 的情况，@import 引入的 css 会等待 下面的css 解析、加载完成之后，才开始加载 */
+/* parent.css  */
+@import url('child1.css');
+@import url('child2.css');
+@import url('child3.css');
+@import url('child4.css');
+
+.box{
+  font-size:20px;
+}
+```
 
 3. 兼容性区别
 
@@ -33,3 +71,4 @@
 ## 参考
 
 - [link 和 @import 区别](https://juejin.cn/post/6844903581649207309)
+- [包含 CSS 的最佳方式？为什么要使用@import？](https://stackoverflow.com/questions/10036977/best-way-to-include-css-why-use-import)
