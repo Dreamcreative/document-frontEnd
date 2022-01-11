@@ -37,12 +37,10 @@ var removeNthFromEnd = function (head, n) {
   二
   1. 先获取节点的总长度
   2. 通过 节点总长度 len和 n ，得到需要删除节点所在 链表的位置
-
-  leetcode 执行报错，不太懂
    */
   let length = 0;
   let node = head;
-  while (node.next !== null) {
+  while (node !== null) {
     length += 1;
     node = node.next;
   }
@@ -50,11 +48,11 @@ var removeNthFromEnd = function (head, n) {
   if (len === 0) return head.next;
   node = head;
   while (true) {
-    node = node.next;
     if (len === 1) {
       node.next = node.next.next;
       return head
     }
+    node = node.next;
     len--;
   }
 };
