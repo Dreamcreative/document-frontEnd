@@ -41,7 +41,28 @@ var mergeTwoLists = function (l1, l2) {
 
   /**
   2 递归方法
-   */
+  l1 [1,2,3]
+  l2 [1,3,4]
 
-  
+  1: l1.1.next = mergeTwoLists([2,3],[1,3,4])
+  2: l2.1.next = mergeTwoLists([2,3],[3,4])
+  3: l1.2.next = mergeTwoLists([3],[3,4])
+  4: l1.3.next = mergeTwoLists([],[3,4])
+  5: l2 = [3,4]
+
+  最终返回的链表  l1.1.next = l2.1.next = l1.2.next = l1.3.next = l2
+                    1         1           2           3         3,4
+   */ 
+  // l1 为空，返回l2
+  if (!l1) return l2;
+  // l2 为空 返回l1
+  if (!l2) return l1;
+  if (l1.val <= l2.val) {
+    // 每次只需要知道当前自己的 next 指向，具有指向 由 mergeTwoLists() 返回
+    l1.next = mergeTwoLists(l1.next, l2);
+    return l1;
+  } else {
+    l2.next = mergeTwoLists(l2.next, l1);
+    return l2;
+  }
 };
