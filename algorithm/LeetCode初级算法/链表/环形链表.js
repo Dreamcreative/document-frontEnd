@@ -43,12 +43,12 @@ var hasCycle = function (head) {
   不存在 则表示链表不是环形
    */
   // 定义集合存放已遍历节点
-  let obj=new Set();
+  let obj = new Set();
   let node = head;
-  while(node){
+  while (node) {
     // 遍历链表
     // 查看 集合中是否存在当前节点，存在表示 链表是环形
-    if(obj.has(node) )return true;
+    if (obj.has(node)) return true;
     // 向集合添加当前节点
     obj.add(node)
     // 节点指向下一个节点
