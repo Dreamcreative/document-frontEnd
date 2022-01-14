@@ -38,10 +38,23 @@
 
 以下情况需要使用协商缓存
 
-1.  一些文件也许会周期性的修改，但是内容并不改变(仅仅改变的修改时间)，这时我们不希望客户端认为这个文件被修改了，而重新请求
-2.  某些文件修改非常频繁，比如在秒以下的时间内进行修改(1 秒内修改 N 次)，If-Modified-Since 能检查到的粒度是`秒级`的，而 expires 检查不到资源秒级的改变
-3.  某些服务器不能精确的得到文件的最后修改时间
+   1.  一些文件也许会周期性的修改，但是内容并不改变(仅仅改变的修改时间)，这时我们不希望客户端认为这个文件被修改了，而重新请求
+   2.  某些文件修改非常频繁，比如在秒以下的时间内进行修改(1 秒内修改 N 次)，If-Modified-Since 能检查到的粒度是`秒级`的，而 expires 检查不到资源秒级的改变
+   3.  某些服务器不能精确的得到文件的最后修改时间
+
+## Etag 和 Last-Modified 的区别
+
+   1. `Last-Modified` 有时候并不太准确，当仅仅只修改了一个文件的内容，但是由于所有文件都重新提交了（所有文件的`Last-Modified` 都会改变），会导致其他未修改文件的缓存失效。
+   2. `Etag` 是根据文件内容生成的`唯一标识`，不会因为文件重新提交而导致未改变的资源缓存失效。
+   3. 当同时具有`Etag`、`Last-Modified`时，`Etag`的优先级高于`Last-Modified`
+
+## Expires 和 Cache-Control 区别
+
+   1. Expires 是 HTTP1.0 的规范：是一个 `绝对时间`
+   2. Cache-Control 是 HTTP1.1 的规范
+   3. 当同时存在 Expires 和 `Cache-Control`时，`Cache-Control`的优先级高
 
 ## 参考
 
 - [HTTP 缓存和浏览器的本地存储](https://segmentfault.com/a/1190000020086923)
+- [HTTP缓存机制的Etag、Last-Modified、If-None-Match和If-Modified-Since、Expires和Cache-Control笔记](https://blog.nowcoder.net/n/d37337b3ab084cd2a94b7e6fe266bcd1)
