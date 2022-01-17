@@ -16,25 +16,9 @@ Promise.resolve().then(res=>{
 })
 ```
 
-2. `Promise.race`竞速方法
+2. 利用 Promise 中抛出错误时，会被 catch 方法捕获,直到链路终点
 
-```js
-let p1 = new Promise((resolve, reject) => {
-    resolve('ok1')
-})
-
-let p2 = new Promise((resolve, reject) => {
-    setTimeout(() => {resolve('ok2')}, 10)
-})
-
-Promise.race([p2, p1]).then((result) => {
-    console.log(result) //ok1
-}).catch((error) => {
-    console.log(error)
-})
-```
-
-3. 利用 Promise 中抛出错误时，会被 catch 方法捕获,直到链路终点
+> `注意：`如果错误被链路中的 catch 捕获，后续的 then 还是会被执行
 
 ```js
 Promise.resolve().then(() => {
@@ -58,3 +42,7 @@ Promise.resolve().then(() => {
 })
 
 ```
+
+## 参考
+
+* [中断或取消Promise链的可行方案](https://www.cnblogs.com/xfcao/p/12084340.html)
