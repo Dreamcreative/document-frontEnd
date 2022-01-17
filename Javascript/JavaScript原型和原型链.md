@@ -51,7 +51,7 @@ Object.prototype.__proto__ === null;
 
 ## 疑问
 
-1. Function.__proto__ === Function.prototype
+1. `Function.__proto__ === Function.prototype`
 
 > 原因 Function对象，是一个内置对象。-- 规定
 
