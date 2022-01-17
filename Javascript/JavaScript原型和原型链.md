@@ -23,7 +23,7 @@ console.log(p.__proto__ === Person.prototype) // true
 
 > `每个 prototype 原型`都有一个 constructor 属性，指向关联的构造函数
 
-![原型和原型链](/images/Javascript/原型和原型链.png)
+![原型和原型链](/images/JavaScript/原型和原型链.png)
 
 ```
 function Person(){
