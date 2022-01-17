@@ -20,35 +20,9 @@
 
 ### 兼容性
 
-![IntersectionObserver兼容性](https://kityminder-img.gz.bcebos.com/bcfcfb6299dde074b5e4bd97c8da9394a7ed9d26)
+![IntersectionObserver兼容性](/images/JavaScript/IntersectionObserver兼容性.png)
 
-> 解决兼容性
-
-```js
-// https://github.com/w3c/IntersectionObserver/tree/main/polyfill
-// intesection-observer.js
-// 判断window 中是否存在 IntersectionObserver
-// 判断window 中是否存在 IntersectionObserverEntry
-// 判断 window.IntersectionObserverEntry.prototype 中是否存在 intersectionRatio
-// 如果不存在 则使用 MutationObserver 进行监听
-
-if ('IntersectionObserver' in window &&
-    'IntersectionObserverEntry' in window &&
-    'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
-
-  // Minimal polyfill for Edge 15's lack of `isIntersecting`
-  // See: https://github.com/w3c/IntersectionObserver/issues/211
-  if (!('isIntersecting' in window.IntersectionObserverEntry.prototype)) {
-    Object.defineProperty(window.IntersectionObserverEntry.prototype,
-      'isIntersecting', {
-      get: function () {
-        return this.intersectionRatio > 0;
-      }
-    });
-  }
-  return;
-}
-```
+* [解决兼容性](https://github.com/w3c/IntersectionObserver/tree/main/polyfill)
 
 ### IntersectionObserverEntry
 
