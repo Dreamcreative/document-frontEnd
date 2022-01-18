@@ -21,6 +21,8 @@
 2. 类数组对象
 3. Map
 4. Set
+5. String
+6. NodeList 对象
 
 ## 给对象添加 iterator 接口
 
