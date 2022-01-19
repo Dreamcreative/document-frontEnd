@@ -54,40 +54,15 @@ let obj = {
 2. for in 在遍历时除了自身的属性，还会遍历原型属性，同时，属性的遍历顺序不一定。不能遍历 `Symbol`类型的字段
 3. for of 只能遍历具有 `iterator`接口的结构，否则会报错
 
-## 使用 forEach、map 遍历对象
+## for(){}、 forEach、map 性能对比
 
-1. forEach、map 会把同步任务执行完，再去执行异步任务
-2. for(){} 、for of 会等到异步任务执行完毕之后，才会进行下一轮循环
+> for > forEach > map
 
-```js
-let arr= [1,2,3,4]
-function getData(){
-	return new Promise((resolve,reject)=>{
-			setTimeout(()=>{
-					resolve("data")
-			})
-	})
-}
-(
-async function (){
-// forEach。map遍历异步任务
-	// let result = arr.map(async()=>{
-	// 		console.log("start")
-	// 		let data = await getData()
-	// 		return data
-	// })
+在 chrome 中 for 循环比 forEach 快 1 倍，forEach 比 map 快 20%
 
-// for 遍历异步任务
-	let result =[]
-	for(let i =0;i<arr.length;i++){
-			console.log("start")
-			let data = await getData()
-			result.push(data)
-	}
-	console.log(result)
-	}
-)()
-```
+* for: for 循环没有额外的调用栈和上下文，所以它的实现最为简单
+* forEach: forEach 它的函数签名中包含了参数和上下文，所以性能低于 for
+* map: map 最慢的原因是，会返回一个新数组，而数组的创建和赋值会导致分配内存空间，因此会带来较大的性能开销
 
 ## 参考
 
