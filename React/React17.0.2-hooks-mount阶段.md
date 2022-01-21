@@ -220,15 +220,16 @@ pushEffect(tag, create, destory, deps){
 
 > useEffect 和 useLayoutEffect 的区别
 
-   1. useEffect 用来代替 `componentDidMount`、`componentDidUpdate`、`componentWillUnmount`生命周期，主要作用是在当`页面渲染后异步调用`，执行一些访问 DOM、请求数据等的副作用操作，`不会阻塞 UI 渲染` 。
-   2. useLayoutEffect 是在 `DOM 更新后，UI渲染前，同步调用`,`会阻塞 UI 渲染`
-   3. useEffect 和 useLayoutEffect 在 `Reader 阶段`打上的 `effectTag`不同，导致 useEffect 和 useLayoutEffect 的执行时间不同
-   4. useEffect 和 useLayoutEffect 的回调函数和销毁函数在每次更新时都会执行。如果想要只执行一次，在 useEffect 和 useLayoutEffect 的依赖项中传入空数组 `useEffect(()=>{},[])`、`useLayoutEffect(()=>{},[])`
-   4. 在`commit 阶段` 分为三个小阶段 `before Mutation`、`Mutation`、`Layout`。
+   1. useLayoutEffect 用来代替 `componentDidMount`、`componentDidUpdate`生命周期，因为 useLayoutEffect 的 create 函数的调用位置、时机一致，且都是被`同步调用，阻塞浏览器渲染`。
+   2. useLayoutEffect 的 destory 函数的调用位置与 `componentWillUnmount`一致，且是同步调用。而 useEffect 的 destroy 函数相当于`componentDidUnmount`（React 没有这个生命周期）
+   3. useLayoutEffect 是在 `DOM 更新后，UI渲染前，同步调用`,`会阻塞 UI 渲染`
+   4. useEffect 和 useLayoutEffect 在 `Reader 阶段`打上的 `effectTag`不同，导致 useEffect 和 useLayoutEffect 的执行时间不同
+   5. useEffect 和 useLayoutEffect 的回调函数和销毁函数在每次更新时都会执行。如果想要只执行一次，在 useEffect 和 useLayoutEffect 的依赖项中传入空数组 `useEffect(()=>{},[])`、`useLayoutEffect(()=>{},[])`
+   6. 在`commit 阶段` 分为三个小阶段 `before Mutation`、`Mutation`、`Layout`。
         
-        1. 在 `before Mutation 阶段` 会执行 `useEffect 的销毁函数`、`useEffect 的回调函数`
+        1. 在 `before Mutation 阶段` 会执行`异步调度`useEffect
         2. 在 `commit-Mutation 阶段`会执行`所有 useLayoutEffect 的销毁函数`
-        3. 在 `commit-Layout 阶段`会执行`所有 useLayoutEffect 的回调函数`
+        3. 在 `commit-Layout 阶段`会同步执行`useLayoutEffect 的回调函数`，异步执行`useEffect 的销毁函数和回调函数`
 
 ### useMemo(nextCreate, deps) 缓存回调返回的值，deps 依赖不变，则缓存值不变
 
