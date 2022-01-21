@@ -170,7 +170,7 @@
 
 						function schedulePassiveEffects(finishedWork){
 							enqueuePendingPassiveHookEffectUnmount(finishedWork, effect);
-	             				enqueuePendingPassiveHookEffectMount(finishedWork, effect);
+							enqueuePendingPassiveHookEffectMount(finishedWork, effect);
 						}
 				
 			2. `commitAttachRef()` 赋值ref
