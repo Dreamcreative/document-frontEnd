@@ -25,7 +25,7 @@
 
 调度任务的优先级，高优任务优先进入 reconciler
 
-# Reconciler(协调器)-render阶段,会根据fiber的优先级进行任务的中断
+# Reconciler(协调器)-render阶段,找出节点中需要更新的部分，并打上 effectTag
 
 * 接收到Scheduler的任务后，每次循环都会先判断当前是否还有剩余时间
 	
@@ -138,24 +138,29 @@
 ## commitRoot(root) root: fiberRootNode-页面的根节点，只有一个(#app)，rootFiber 组件的根节点
 
 * commit 阶段入口 分为三个子阶段
-	1. ` before mutation阶段`(执行DOM操作之前)
-		1. 处理DOM节点渲染/删除后的逻辑
+	1. `before mutation阶段`(执行DOM操作之前)
+		1. 处理 blur/focus DOM 节点
 		2. 遍历effectList (`commitBeforeMutationEffects()`)
-		3. 调用  commitBeforeMutationEffects (调用 生命周期函数 getSnapshotBeforeUpdate 钩子)
-		4. 在浏览器完成布局与绘制之后异步调度 useEffect （只是调度起来，并不是真正的执行，真正的执行是在 `Renderer-Layout 阶段`）
+		3. 调用 commitBeforeMutationEffects (`调用 生命周期函数 getSnapshotBeforeUpdate 钩子`)
+		4. 在浏览器完成布局与绘制之后`异步调度` useEffect （只是调度起来，并不是真正的执行，真正的执行是在 `Renderer-Layout 阶段`）
 			* 为什么异步调度
 				1. useEffect如果同步调用，阻塞浏览器的行为，导致各种问题
  
 	2. mutation阶段(执行DOM操作)
 		* 遍历effectList (`commitMutationEffects()`)
-			1. 根据ContentReset effectTag 重置文本节点
-			2. 更新ref
-			3. 根据effectList上fiber节点上不同的 effectTag执行 增/删/更新等操作
+			1. 根据ContentReset effectTag `重置文本节点`
+			2. `解绑ref`
+			3. 根据effectList上fiber节点上不同的 effectTag 执行 增/删/更新等操作
 				* Placement 插入操作 (`commitPlacement`) 
 				* PlacementAndUpdate 插入并更新操作 (`commitPlacement() 、commitWork()`)
 				* Update 更新操作 (`commitWork`)
 				* Deletion 删除操作 (`commitDeletion()`)
-			4. 执行useLayoutEffect 销毁函数
+			4. `执行 useLayoutEffect 销毁函数`
+			5. 完成 current 树的切换 `root.current = finishedWork`
+				
+				1. 为什么在此时切换 current 树
+
+					* 因为在 `Mutation`阶段，所有的 DOM 节点完成渲染，`生命周期函数已经可以访问到真实的 DOM 节点`,如果不切换，会导致访问到的节点还是上一次渲染的节点，引起数据错误
 			
 	3. layout阶段(执行DOM操作之后, `DOM渲染完成`)
 		1. 遍历effectList (`commitLayoutEffects()`) 	
@@ -168,11 +173,12 @@
 					* 调用`useLayoutEffect`回调函数
 					* 调用`useEffect`的销毁和回调函数
 
+					```js
 						function schedulePassiveEffects(finishedWork){
 							enqueuePendingPassiveHookEffectUnmount(finishedWork, effect);
 							enqueuePendingPassiveHookEffectMount(finishedWork, effect);
 						}
-				
+					```
 			2. `commitAttachRef()` 赋值ref
 
 		2. useEffect相关的处理
@@ -183,8 +189,5 @@
 	* React v16开始 对 componentWillxxxx这类钩子前添加了`UNSAFE_`前缀
 		* 因为 fiber reconciler调度在Reconciler协调器(render阶段)会多次中断任务，所以组件对应的 componentWillxxxx这类生命周期函数可能会被多次触发。导致行为与React v15不一致。因此，新增了 getSnapshotBeforeUpdate这个生命周期钩子
 		* getSnapshotBeforeUpdate钩子在commit阶段 - before mutation阶段调用，commit阶段内是同步调用的， 所以不会出现多次触发的问题
-
-* commit阶段执行完后  rootFiber.current 与finishedWork切换 `root.current=finishedWork;`
-
 
 事件系统 packages/react-dom/src/events
