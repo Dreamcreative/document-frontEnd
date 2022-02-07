@@ -30,7 +30,7 @@
 
 > 主要是两个生命周期函数
 
-> 类组件中，只要有一下任意一个生命周期出现，那么这个类组件就是`错误边界组件`
+> 类组件中，只要有以下任意一个生命周期出现，那么这个类组件就是`错误边界组件`
 
 > 错误边界组件可以阻止子组件渲染时报错
 
@@ -62,7 +62,7 @@ class MyErrorBoundary extends Component {
 
 > [React 错误边界 官方文档](https://zh-hans.reactjs.org/docs/error-boundaries.html) 提到了四种无法 catch 错误的场景
 
-  1. 回调事件。由于回调事件执行时机不再渲染周期内。所以无法被 `错误边界组件` catch 住，只能自行 catch
+  1. 回调事件。由于回调事件执行时机不在渲染周期内。所以无法被 `错误边界组件` catch 住，只能自行 catch
   2. 异步。比如`setTimeout`或`requestAnimationFrame`,和第一条同理
   3. 服务器渲染
   4. `错误边界组件`无法 catch 自身的错误。只能 catch 自身内部子组件的错误 ,无论是 类组件还是函数组件都能 catch 错误 
