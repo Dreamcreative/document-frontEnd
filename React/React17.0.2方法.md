@@ -30,10 +30,10 @@ PureComponent(props, context, updater){
     this.refs = emptyObject;
     this.updater = updater || ReactNoopUpdateQueue;
 }
-const purrComponentProperty = PureComponent.prototype = new ComponentDummy();
-purrComponentProperty.constructor = PureComponent;
-Object.assign(purrComponentProperty, Component.prototype);
-purrComponentProperty.isPureReactComponent = true;
+const pureComponentProperty = PureComponent.prototype = new ComponentDummy();
+pureComponentProperty.constructor = PureComponent;
+Object.assign(pureComponentProperty, Component.prototype);
+pureComponentProperty.isPureReactComponent = true;
 
 // packages/react-reconciler/src/ReactFiberClassComponent.new.js
 // 判断组件是否需要更新
@@ -251,6 +251,16 @@ isValidElement(object){
 ## React.createRef() 创建一个 ref 返回
 
 ## React.forwardRef() 创建一个 React 组件，将接收到的 ref 属性传递给创建的 React 元素
+
+```js
+    forwardRef(render:(props, ref)=>{}){
+        const elementType= {
+            $$typeof: REACT_FORWARD_REF_TYPE,
+            render:render
+        }
+        return elementType;
+    }
+```
 
 ## React.lazy() 允许动态加载组件，
 
