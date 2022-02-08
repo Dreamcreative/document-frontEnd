@@ -1,5 +1,7 @@
 # React 17 合成事件实现
 
+* `packages/react-dom/src/events`
+
 ## React 事件 优先级
 
 ```js
@@ -274,7 +276,7 @@ createSyntheticEven(Interface){
             this.isPropagationStopped = true;
         },
         persist:function(){
-            // React 17 之前，由于事件调用完毕之后，就会被清除，所以为了持久的缓冲 event,所以需要调用 `e.persist()`
+            // React 17 之前，由于事件调用完毕之后，就会被清除，所以为了持久的缓存 event,所以需要调用 `e.persist()`
             // 从 v17 开始，e.persist() 不会做任何事情，因为 SyntheticEvent 不再使用事件池
         },
         // 判断当前事件是否可以被事件池释放
