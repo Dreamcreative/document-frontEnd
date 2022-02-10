@@ -40,7 +40,7 @@ const mapDispatchToProps = dispatch => {
 /**
   mapStateToProps 就是 Redux 中的 state, 需要传入 包裹组件的 props 属性
   mapDispatchToProps 就是 Redux 中的 reducer 修改 state 的 纯函数
-  mergeProps 如果没有这个参数，会默认进行合并传入的属性 {...ownProps, ...stateProps, ...dispatchProps}
+  mergeProps 如果没有这个参数，会默认进行合并传入的属性 {...stateProps, ...dispatchProps, ...ownProps,}
   options {
     context: object, 自定义的上下文，不使用 React-Redux 提供的 context
     pure: boolean, 是否缓存更新。默认为 true ，默认开启缓存模式，每次更新时，会进行浅比较 state 和 props，如果有变化就重新渲染组件，无变化就不渲染组件；为 false时，无论 state /props 是否变化，都会重新渲染组件。相当于 PureComponent
@@ -191,7 +191,7 @@ const checkForUpdates = () => {
 
 > 订阅流程：如果被 connect包裹，并且具有第一个参数。首先通过 context 获取最近的父 subscription,然后创建一个当前 subscription,并且与父级的 subscription 建立连接。当第一次 HOC 容器组件挂载完成后，在 useEffect里，进行订阅，将自己的订阅函数 `checkForUpdates`作为回调，通过， trySubscribe 和 `parentSub.addNestedSub`，加入到父级 subscription的 listeners 订阅集合中。`完成整个订阅流程`
 
-> 更新流程：当 state 改变时，会触发最顶级订阅器（Provider 过程参数的 Subscription）的 `store.subscribe`，然后触发更新`checkForUpdates`，然后`checkForUpdates`根据 mapStateToProps, mergeProps 等操作，验证组件是否需要发起订阅。props 是否改变，并更新。如果发生改变，则触发业务组件的更新，如果没有发生改变，那个通知当前 subscription 的listeners 检查是否更新，层层向下检查被 connect 包裹的子组件是否需要更新。`完成整个更新流程`
+> 更新流程：当 state 改变时，会触发最顶级订阅器（Provider 过程产生的 Subscription）的 `store.subscribe`，然后触发更新`checkForUpdates`，然后`checkForUpdates`根据 mapStateToProps, mergeProps 等操作，验证组件是否需要发起订阅。props 是否改变，并更新。如果发生改变，则触发业务组件的更新，如果没有发生改变，那个通知当前 subscription 的listeners 检查是否更新，层层向下检查被 connect 包裹的子组件是否需要更新。`完成整个更新流程`
 
 ## 问题 - 源码
 
