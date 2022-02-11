@@ -36,4 +36,34 @@ function deepCopy(obj) {
   }
   return newObj;
 }
-
+// 更完整的 深克隆，处理了循环引用
+/**
+ * 
+ * @param {object} obj 要拷贝的对象
+ * @param {Map} map 用于存储循环引用对象
+ */
+function _deepClone(obj = {}, map = new Map()) {
+  // 如果是基本类型，直接返回
+  if (typeof obj !== 'object') {
+    return obj;
+  }
+  // 处理 null
+  if (typeof obj === 'object' && obj == null) return obj;
+  // 如果 obj 已存在，直接返回，处理循环嵌套
+  if (map.has(obj)) {
+    return map.get(obj);
+  }
+  let result = {};
+  // 判断 拷贝的对象是否是数组，使用两个条件判断，是为了防止 原型链被修改
+  if (Array.isArray(obj) || Object.toString.call(obj) === '[object Array]') {
+    result = [];
+  }
+  map.set(obj, result);
+  for (const key in obj) {
+    // 只处理对象自身属性
+    if (obj.hasOwnProperty(key)) {
+      result[key] = _deepClone(obj[key], map)
+    }
+  }
+  return result;
+}
