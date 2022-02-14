@@ -6,7 +6,7 @@
 
   > `history 库` 分为 三种路由模式
 
-1. history 模式：在`页面的 url` 上存储 location 信息，通过 `popstate` 监听路由变化 -- 对应 `MemoryRouter`
+1. history 模式：在`页面的 url` 上存储 location 信息，通过 `popstate` 监听路由变化 -- 对应 `BrowserRouter`
   ```js
   createBrowserHistory(){
     window.addEventListener('popstate', handlePop);
