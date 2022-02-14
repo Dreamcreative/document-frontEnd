@@ -73,7 +73,42 @@ useNavigate(){
 }
 ```
 
-6. `React-Router` switch 有什么用
+6. `React-Router` switch 有什么用 - v5
+
+> `<Switch>` 用来包裹 `<Route>`和 `<Redirect>`，使用 `<Switch>`只渲染第一个匹配到的路由，如果不使用`<Switch>`,就会将所有匹配到的路由都展示出来
+
+> 在 `React-Router` v6 中删除了 `<Swich>`
+
+```js
+// v5  packages/react-router/modules/Switch.js
+// 使用 React.children.forEach 遍历子组件，获取第一个匹配到的 子组件，返回
+
+class Switch extends React.Component {
+  render(){
+    return (
+      <RouterContext.Consumer>
+      {
+        (context)=>{
+          const location = this.props.children || context.location;
+          let element, match;
+          React.children.forEach(this.props.children,(child)=>{
+            if(match ==null && React.isValidElement(child)){
+              element = child;
+              const path = child.props.path||child.props.from;
+              match=path
+              ? matchPath(location.pathname, { ...child.props, path })
+                : context.match;
+            }
+          })
+          return match
+            ? React.cloneElement(element, {location, computedMatch:match})
+            : null;
+        }
+      }
+      </RouterContext.Consumer>
+    )
+  }
+```
 
 7. `React-Router` 实现原理
 
@@ -127,3 +162,7 @@ Link = React.forwardRef(
   )
 }
 ```
+
+13. withRouter 的作用
+
+> withRouter 是一个高阶组件，可以包装任意自定义组件，将`react-router`的 history、location、 match 三个对象传入。
