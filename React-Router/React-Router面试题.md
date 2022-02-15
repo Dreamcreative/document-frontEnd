@@ -166,3 +166,58 @@ Link = React.forwardRef(
 13. withRouter 的作用
 
 > withRouter 是一个高阶组件，可以包装任意自定义组件，将`react-router`的 history、location、 match 三个对象传入。
+
+14. `<Redirect>` 重定向组件 v6 中被删除
+
+> 重定向组件
+
+```js
+function Redirect({computedMatch, to, push = false}){
+  return (
+    <RouterContext.Consumer>
+      {
+        context=>{
+          const { history, staticContext } = context;
+          const method = push? history.push: history.replace;
+          const location = createLocation(
+            computedMatch
+              ? typeof to === "string"
+                ? generatePath(to, computedMatch.params)
+                : {
+                    ...to,
+                    pathname: generatePath(to.pathname, computedMatch.params)
+                  }
+              : to
+          );
+          // When rendering in a static context,
+          // set the new location immediately.
+          if (staticContext) {
+            method(location);
+            return null;
+          }
+          return (
+            <Lifecycle
+              onMount={() => {
+                method(location);
+              }}
+              onUpdate={(self, prevProps) => {
+                const prevLocation = createLocation(prevProps.to);
+                if (
+                  !locationsAreEqual(prevLocation, {
+                    ...location,
+                    key: prevLocation.key
+                  })
+                ) {
+                  method(location);
+                }
+              }}
+              to={to}
+            >
+            </Lifecycle>
+          )
+        }
+      }
+    </RouterContext.Consumer>
+  )
+}
+```
