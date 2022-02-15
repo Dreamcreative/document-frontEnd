@@ -2,6 +2,8 @@
 
 1. `React-Router` 怎么获取 URL 参数
 
+> 通过上下文获取最后一个匹配到的路由，返回该路由参数
+
 ```js
 // 使用 useParams
 useParams(){
