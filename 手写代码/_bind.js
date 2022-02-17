@@ -68,15 +68,13 @@ Function.prototype.myBind2 = function (context, ...args1) {
   let fNOP = function () { }
   // 返回的函数
   let fBound = function () {
-    return function () {
-      /**
-       * this instanceof fBound 判断 bind 返回的函数是否被当作构造函数使用
-       * 如果被当作构造函数使用，则 bind 传入的 context 失效，使用当前函数的 this
-       * 否则使用 bind 传入的 context
-       */
+    /**
+     * this instanceof fBound 判断 bind 返回的函数是否被当作构造函数使用
+     * 如果被当作构造函数使用，则 bind 传入的 context 失效，使用当前函数的 this
+     * 否则使用 bind 传入的 context
+     */
 
-      fToBind.apply(this instanceof fBound ? this : context, [...args1, ...arguments])
-    }
+    return fToBind.apply(this instanceof fBound ? this : context, [...args1, ...arguments])
   }
   fNOP.prototype = this.prototype;
   fBound.prototype = new fNOP();
