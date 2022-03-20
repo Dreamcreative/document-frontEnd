@@ -68,6 +68,7 @@ export default Welcome
     * 在 React 合成事件中，setState 和 useState 都是异步执行
     * 在 原生事件中 ，setState 和 useState 都是同步执行。因为合成事件是被 React 重写过，React 可以控制执行，而原生事件，React 无法控制
     * 在合成事件中，多次执行 setState，会被合并更新，而 useState 不会被合并
+    * 在 legecy 模式下，setstate 同步异步都有，在 concurrent 模式下都为异步
 
 ## React 设计模式
 
