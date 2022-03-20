@@ -20,7 +20,7 @@
 
   5. react 怎么通过`dom`元素，找到与之对应的`fiber`对象？
 
-    * 按照`冒泡`、`捕获`的逻辑，查找 dom 元素对应的 fiber 对象
+    * 通过 internalInstanceKey 查找`var internalInstanceKey = '__reactFiber$'+ randomKey`
 
   6. `onClick`是在冒泡阶段绑定的？那么`onClickCapture`就是在事件捕获阶段绑定的吗？
 
