@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手写Promise</title>
+</head>
+
+<body>
+  <script>
+    const PENDING = 'PENDING'
+    const FULFILLED = 'FULFILLED'
+    const REJECTED = 'REJECTED'
+
+    class MyPromise {
+      /**
+        finally:
+          无论promise状态是什么 都会执行
+          并且会将之前 resolve 或者reject的值穿透到之后的then中
+       */
+      finally(callback) {
+        let P = this.constructor;
+        return this.then(
+          value => P.resolve(callback()).then(() => value),
+          reason => P.resolve(callback()).then(() => {
+            throw reason
+          })
+        );
+      }
+      /**
+        race 执行传入的 promise数组，只要其中有一个promise resolve或者reject，就会直接返回
+      */
+      static race(promises) {
+        return new MyPromise((resolve, reject) => {
+          // 遍历执行传入的promises 执行之后，只会返回第一个 resolve或者reject的值
+          for (let i = 0; i < promises.length; i++) {
+            promises[i].then(val => {
+              resolve(val)
+            }, err => {
+              reject(err)
+            })
+          }
+        })
+      }
+      /**
+        resolve 
+        返回一个resolve状态的 promise
+        值为传入的value
+      */
+      static resolve(val) {
+        return new MyPromise((resolve, reject) => {
+          // 传入值分为3类
+          // 1 普通的值 直接resolve返回
+          // 2 具有then方法的 对象 
+          // 3 一个promise
+          if (val == null) resolve(null)
+          if (val instanceof MyPromise) {
+            val.then(y => {
+              resolveExcutor(this, y, resolve, reject)
+            }, err => {
+              reject(err)
+            })
+          }
+          resolve(val)
+        })
+      }
+      /**
+        all
+        批量执行传入的 promise数组
+        当所有promise都成功之后，返回一个所有值得数组
+        当其中一个promise执行失败，直接reject 错误
+      */
+      static all(promises) {
+        return new MyPromise((resolve, reject) => {
+          let result = []
+          let index = 0
+          for (let i = 0; i < promises.length; i++) {
+            promises[i].then(y => {
+              result[i] = y
+              index++
+              if (index === promises.length) {
+                resolve(result)
+              }
+            }, err => {
+              reject(err)
+            })
+          }
+        })
+      }
+      constructor(fn) {
+        this.state = PENDING
+        this.value = undefined;
+        // 存储所有resolve的回调，当then调用完毕之后遍历执行所有回调函数
+        this.resolveCallbacks = []
+        // 存储所有reject的回调，当then调用完毕之后遍历执行所有回调函数
+        this.rejectCallbacks = []
+        const resolve = (val) => {
+          setTimeout(() => {
+            // 如果传入的值是一个thenable对象就不能走正常的调用逻辑， 需要走thenable对象的逻辑
+            if ((typeof val === "function" || typeof val === "object") && val !== null && typeof val.then ===
+              "function") {
+              resolveExcutor(this, val, resolve, reject)
+              return
+            }
+            if (this.state === PENDING) {
+              // 只有state为PENDING状态才能够转换为FULFILLED状态
+              this.state = FULFILLED
+              this.value = val
+              this.resolveCallbacks.map(fn => fn(val))
+            }
+          }, 1000)
+        }
+        const reject = (val) => {
+          setTimeout(() => {
+            // 如果传入的值是一个thenable对象就不能走正常的调用逻辑， 需要走thenable对象的逻辑
+            if ((typeof val === "function" || typeof val === "object") && val !== null && typeof val
+              .then === "function") {
+              resolveExcutor(this, val, resolve, reject)
+              return
+            }
+            if (this.state === PENDING) {
+              // 只有state为PENDING状态才能转换为REJECTED状态
+              this.state = REJECTED
+              this.value = val
+              this.rejectCallbacks.map(fn => fn())
+            }
+          }, 1000)
+        }
+        // promise会在传入的回调中 传入resolve，reject函数来执行
+        fn(resolve, reject)
+      }
+      then(onFulfilled = val => val, onRejected = err => {
+        throw err
+      }) {
+        let promise2 = null
+        if (this.state === PENDING) {
+          promise2 = new MyPromise((resolve, reject) => {
+            // 将then的回调压入到 resolveCallbacks中
+            // 将回调执行一遍，得到回调的返回值
+            // 将返回值和当前的promise传入 resolve执行器中，递归执行，
+            // 当返回值为 thenable对象 或者是一个 promise的特殊情况
+            this.resolveCallbacks.push(() => {
+              const x = onFulfilled(this.value)
+              resolveExcutor(promise2, x, resolve, reject)
+            })
+            this.rejectCallbacks.push(() => {
+              const x = onRejected(this.value)
+              resolveExcutor(promise2, x, resolve, reject)
+            })
+          })
+        }
+        if (this.state === FULFILLED) {
+          promise2 = new MyPromise((resolve, reject) => {
+            this.resolveCallbacks.push(() => {
+              const x = onFulfilled(this.value)
+              resolveExcutor(promise2, x, resolve, reject)
+            })
+          })
+        }
+        if (this.state === REJECTED) {
+          promise2 = new MyPromise((resolve, reject) => {
+            this.rejectCallbacks.push(() => {
+              const x = onRejected(this.value)
+              resolveExcutor(promise2, x, resolve, reject)
+            })
+          })
+        }
+        return promise2
+      }
+      catch(err) {
+        // 处理.catch方法之前的错误
+        return new MyPromise((resolve, reject) => {
+          reject(err)
+        })
+      }
+    }
+    // 迭代执行
+    function resolveExcutor(promise2, x, resolve, reject) {
+      // 返回的x值 会有3种情况
+      // 1. x 与当前promise相等时，返回一个错误
+      // 2. x为一个promise 根据不同的状态做不同的返回
+      // 3. x为一个 具有then方法的对象时 ，会将x当做promise来执行
+      // 4. x为一个普通的值时，直接返回
+      if (x === promise2) {
+        throw new Error("循环调用promise")
+      }
+      if (x instanceof MyPromise) {
+        if (x.state === PENDING) {
+          x.then(y => {
+            resolveExcutor(promise2, y, resolve, reject)
+          })
+        }
+        x.state === FULFILLED && resolve(x)
+        x.state === REJECTED && reject(x)
+      }
+      if ((typeof x === "function" || typeof x === "object") && typeof x !== null) {
+        if (typeof x.then === "function") {
+          x.then(y => {
+            resolve(y)
+          }, err => {
+            reject(err)
+          })
+        } else {
+          resolve(x)
+        }
+      } else {
+        resolve(x)
+      }
+    }
+  </script>
+  <script>
+    // 步骤1
+    //   const promise = new MyPromise((resolve, reject) => {
+    //     setTimeout(() => {
+    //       // ajax 获取数据
+    //       resolve("step1");
+    //     }, 1000);
+    //   }).then(data => {
+    //     console.log("获取到数据：", data);
+    //   });
+
+    // 步骤2
+    // const promise = new MyPromise((resolve, reject) => {
+    //   resolve("step2");
+    // }).then(data => {
+    //   console.log("获取到数据：", data);
+    // });
+
+    // 步骤3
+    // const promise = new MyPromise((resolve, reject) => {
+    //   resolve("step3");
+    //   resolve("step3.1");
+    // }).then(data => {
+    //   console.log("获取到数据：", data);
+    // });
+
+    // 步骤4
+    // const promise = new MyPromise((resolve, reject) => {
+    //     resolve("step4");
+    //   })
+    //   .then(data => {
+    //     console.log("获取到数据：", data);
+    //     return "step4.1";
+    //   })
+    //   .then(data => {
+    //     console.log("获取到数据：", data);
+    //   });
+
+    // 步骤5
+    // const promise = new MyPromise((resolve, reject) => {
+    //     resolve("step5");
+    //   })
+    //   .then(data => {
+    //     console.log("获取到数据：", data);
+    //     return "step5.1";
+    //   })
+    //   .then()
+    //   .then(data => {
+    //     console.log("获取到数据：", data);
+    //   });
+
+    // 步骤6
+    // const promise = new MyPromise((resolve, reject) => {
+    //     resolve("step6");
+    //   })
+    //   .then(data => {
+    //     console.log("获取到数据：", data);
+    //     return {
+    //       then(r, j) {
+    //         r("step6.1");
+    //       }
+    //     };
+    //   })
+    //   .then(data => {
+    //     console.log("获取到数据：", data);
+    //   });
+
+    // 步骤7
+    // const promise = new MyPromise((resolve, reject) => {
+    //     resolve("step7");
+    //   })
+    //   .then(data => {
+    //     console.log("获取到数据：", data);
+    //     return new MyPromise(resolve => {
+    //       resolve("7.1");
+    //     });
+    //   })
+    //   .then(data => {
+    //     console.log("获取到数据：", data);
+    //   });
+
+    // 步骤8
+    // const promise = new MyPromise((resolve, reject) => {
+    //   resolve(
+    //     new Promise(resolve => {
+    //       resolve("step8");
+    //     })
+    //   );
+    // }).then(data => {
+    //   console.log("获取到数据：", data);
+    // });
+
+    // step9
+    // const promise = new MyPromise((resolve, reject) => {
+    //   resolve("step9");
+    // });
+    // const promise1 = promise.then(data => {
+    //   return promise1;
+    // });
+
+    // step10
+    // MyPromise.race([
+    //   new MyPromise((resolve, reject) => {
+    //     reject(3)
+    //   }),
+    //   new MyPromise(resolve => {
+    //     resolve(1);
+    //   }),
+    //   new MyPromise(resolve => {
+    //     resolve(2);
+    //   }),
+    // ]).then(dataList => {
+    //   console.log(dataList);
+    // });
+
+    // step11
+    //   const promise = new MyPromise((resolve, reject) => {
+    //     reject("step11");
+    //   }).then(
+    //     data => {
+    //       console.log("resolve 值：", data);
+    //     },
+    //     rej => {
+    //       console.log("reject 值：", rej);
+    //     }
+    //   );
+
+    // step12
+    // const promise = new MyPromise((resolve, reject) => {
+    //   resolve("step12");
+    // });
+
+    // setTimeout(() => {
+    //   promise.then(data => {
+    //     console.log("step12:", data);
+    //   });
+
+    //   promise.then(data => {
+    //     console.log("step12:", data);
+    //   });
+    // }, 1000);
+
+    // finally
+    // const promise = new MyPromise((resolve, reject) => {
+    //   resolve("step11");
+    // })
+    // promise.then(
+    //     data => {
+    //       console.log("resolve 值：", data);
+    //       return 'resolve'
+    //     },
+    //     rej => {
+    //       console.log("reject 值：", rej);
+    //       return "reject"
+    //     }
+    //   )
+    //   .finally(() => {
+    //     console.log(2222222222)
+    //     return 1111111
+    //   })
+    //   .then((data) => {
+    //     console.log("data", data)
+    //     return 3333333333
+    //     // throw new Error("finnally")
+    //   }).then(val => {
+    //     console.log("val", val)
+
+    //   })
+
+    // let promise = Promise.resolve(new Error(11111111))
+    // promise.then(val => {
+    //   console.log("val", val)
+
+    // }, err => {
+    //   console.log("err", err)
+
+    // })
+
+    const promise = new MyPromise((resolve, reject) => {
+      reject("step11");
+    })
+    promise.then(
+      data => {
+        console.log("resolve 值：", data);
+        return 'resolve'
+      },
+      rej => {
+        console.log("reject 值：", rej);
+        return 11111
+      }
+    )
+
+      .then((data) => {
+        console.log("data", data)
+        return 3333333333
+        // throw new Error("finnally")
+      }).then(val => {
+        console.log("val", val)
+
+      })
+  </script>
+</body>
+
+</html>
