@@ -1,6 +1,14 @@
 // Generator 迭代器 自执行函数
 
 /**
+ * async/await 和 generator 的区别
+  1. async/await 自带执行器，不需要手动调用 next 方法 执行下一步
+  2. async 函数返回的是 Promise 对象，Generator 返回的是一个生成器对象
+  3. await 能返回 Promise 的 resolve/reject 的值
+  4. async/await 实际上是对 Generator 的封装，是一个语法糖
+ */
+
+/**
  * 使用 co 模块
  */
 
