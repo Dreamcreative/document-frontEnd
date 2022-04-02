@@ -20,3 +20,7 @@
   > 以下是在处理一个在微信小程序中添加`水印`时遇到的一个问题：真机上的 bug，通过`wx.canvasToTempFilePath(config, this)`，转换成功后返回的图片地址是一个`http://tmp/xxx.png`格式的本机地址。如果将该地址设置为 `view 标签`的背景时，Android 手机可以渲染成功，但是在 `IOS`手机中，该地址无法被正常渲染。但是可以通过使用`image 标签`来渲染。
 
 * [Taro 水印组件](./WaterMark/index.tsx)
+
+## 参考
+
+* [wx.canvasToTempFilePath](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/wx.canvasToTempFilePath.html)
