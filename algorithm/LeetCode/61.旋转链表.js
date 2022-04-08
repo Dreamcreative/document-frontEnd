@@ -67,3 +67,55 @@ function getLen(head) {
   }
   return len;
 }
+
+var rotateRight2 = function (head, k) {
+  /**
+    方法二：拆解环
+    先将 单向链表 首尾相连，
+    再移动 k 位置，将环解开
+    例子 
+    链表 1 -> 2 -> 3 -> 4 ->  5
+    环 1 -> 2 -> 3 
+       |        |
+       5  <-    4
+   */
+  // 如果链表为空，直接返回
+  if (!head) return head;
+  // 链表长度
+  let len = 1;
+  let node = head;
+  // 计算链表长度，同时将节点移动到 尾结点
+  while (node.next) {
+    node = node.next
+    len++;
+  }
+  // 将链表首尾相连
+  node.next = head;
+  // 计算环的移动位置
+  let move = len - k % len;
+  if (move === 0) return head;
+  // 用来保存最终返回的链表
+  let result = new ListNode();
+  let temp = result;
+  // 将环指向第一个节点 因为将连表连接成环时，环的第一个节点是 链表的尾结点
+  node = node.next;
+  // 将环移动 move 位置
+  while (move) {
+    node = node.next;
+    move--;
+  }
+  // 再将环移动到链表长度的位置
+  while (len) {
+    temp.next = node;
+    len--;
+    temp = temp.next;
+    node = node.next;
+    if (len === 0) {
+      // 当环移动到 链表长度位置时，将 后续的节点剔除
+      // 当前的节点已经是移动后的链表节点了
+      temp.next = null;
+    }
+  }
+  // 最后返回节点
+  return result.next;
+}
