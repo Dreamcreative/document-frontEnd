@@ -217,3 +217,144 @@ InterceptorManager.prototype.forEach = function (fn){
   })
 }
 ```
+
+## Axios 的实现
+
+```js
+function Axios(instanceConfig){
+  // 设置 axios 默认配置
+  this.defaults = instanceConfig;
+  // 设置 request/response 拦截器
+  this.interceptors = {
+    request: new InterceptorManager(),
+    response: new InterceptorManager(),
+  }
+}
+
+/**
+ * @param {Object | String} configOrUrl 传入配置 或者是 请求的 url
+ * @param {Object} config 传入配置
+*/
+Axios.prototype.request = function (configOrUrl, config){
+  // 如果 configOrUrl 是 字符串，则表示 传入的是 请求 url
+  if(typeof configOrUrl === 'string'){
+    config = config || {};
+    config.url = configOrUrl;
+  }else{
+    // 否则 传入的是 配置
+    config = configOrUrl || {};
+  }
+  // 合并默认配置和 传入的配置
+  config = mergeConfig( this.defaults, config);
+
+  // 根据传入的 method 或者 默认设置的 method 设置 请求方法，默认为 get 请求
+  if(config.method){
+    config.method = config.method.toLowerCase();
+  }else if(this.defaults.method){
+    config.method = this.defaults.method.toLowerCase();
+  }else{
+    config.method = 'get';
+  }
+
+  // 收集请求拦截器的 处理成功函数、处理失败函数
+  const requestInterceptorChain = [];
+  // 同步请求拦截器
+  let synchronousRequestInterceptors = true;
+  // 遍历请求拦截器 将 请求拦截器设置的 处理成功函数 onFulfilled 和 处理失败函数 onRejected unshift 进 requestInterceptorChain 请求拦截器链中
+  // 请求拦截器，先定义的后执行。后定义的先执行，就是倒序执行
+  this.interceptors.request.forEach(function (interceptor){
+    if(typeof interceptor.runWhen === 'function' && interceptor.runWhen(config)=== false){
+      return ;
+    }
+    synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
+    requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected)
+  })
+  // 收集响应拦截器的 处理成功函数、处理失败函数
+  const responseInterceptorChain = [];
+  // 响应拦截器是正序执行
+  // 先定义的先执行，后定义的后执行
+  this.interceptors.response.forEach(function(interceptor){
+    responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+  })
+
+  let promise;
+  // 如果是异步 请求拦截器
+  if(!synchronousRequestInterceptors){
+    // [触发请求的触发器, undefined]
+    let chain = [dispatchRequest, undefined];
+    // 将 [触发请求的触发器, undefined] 从前 压入到 请求拦截器的处理链数组中
+    Array.prototype.unshift.apply(chain, requestInterceptorChain);
+    // 将 响应拦截器的 成功/失败处理函数队列 与 请求拦截器的 成功/失败 处理队列进行合并
+    chain = chain.concat(responseInterceptorChain);
+    promise = Promise.resolve(config);
+    // 遍历 合并后的 队列
+    while(chain.length){
+      promise = promise.then(chain.shift(), chain.shift())
+    }
+    return promise;
+  }
+  // 如果是同步请求拦截器
+  let newConfig = config;
+  // 处理 请求拦截器
+  while(requestInterceptorChain.length){
+    // 处理成功函数
+    let onFulfilled = requestInterceptorChain.shift();
+    // 处理失败函数
+    let onRejected = requestInterceptorChain.shift();
+    try{
+      newConfig = onFulfilled(newConfig)
+    }catch(err){
+      onRejected(err);
+      break;
+    }
+  }
+  try{
+    promise = dispatchRequest(newConfig);
+  }catch(err){
+    return Promise.reject(err);
+  }
+  // 处理响应拦截器
+  while(responseInterceptorChain.length){
+    // 挨个处理响应拦截器，先定义的响应拦截器先处理
+    promise = promise.then(responseInterceptorChain.shift(),responseInterceptorChain.shift())
+  }
+  // 返回响应
+  return promise;
+}
+
+// 根据 adapter 适配器（window 环境使用 xhr、node 环境使用 http）触发请求
+function dispatchRequest(config){
+  // 获取headers
+  config.headers = confing.headers || {};
+  // 转换 data
+  config.data = transformData.call(config, config.data, config.headers, config.transformRequest);
+  // 合并 headers
+  config.headers = merge(config.headers.common||{}, config.headers[config.method]||{}, config.headers);
+  // 获取当前使用的 适配器
+  let adapter = config.adapter || defaults.adapter;
+  return adapter(config).then(function (response){
+    // 处理请求成功
+    // 将 response.data 转换为需要的数据类型
+    response.data = transformData.call(
+      config,
+      response.data,
+      response.headers,
+      config.transformResponse)
+    return response;
+  }, function (reason){
+    // 处理请求失败
+    if(!isCancel(reason)){
+      if(reason && reason.response){
+        reason.response.data = transformData.call(
+          config,
+          reason.response.data,
+          reason.response.headers,
+          config.transformResponse,
+        )
+      }
+    }
+    // 返回一个 promise 错误
+    return Promise.reject(reason)
+  })
+}
+```
