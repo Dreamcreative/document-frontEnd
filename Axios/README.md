@@ -64,3 +64,109 @@ utiles.forEach(['post', 'put', 'patch'], function (method){
   defaults.headers[method] = {'Content-Type': 'application/x-www-form-urlencoded'}
 })
 ```
+
+## Axios 其他属性
+
+```js
+const otherConfig={
+  // 必填 发送请求的目标地址 url
+  url: "",
+  // 请求方法 默认 get
+  method: 'get',
+  // 发送请求时，同时发送的数据
+  data: {},
+  // 请求目标的主机名 如果 url 不是一个完整的 http 地址，baseURL 会拼接到 url 的前面
+  baseURL: 'https://xxxx.com',
+  // 将请求参数 序列化
+  paramsSerializer: function(params){
+    return QS.stringify(params, {arrayFormat: 'brackets'})
+  },
+  // 请求超时报错信息
+  timeoutMessage: '请求超时报错信息',
+  // 请求时 是否需要携带 cookie
+  withCredentials: false,
+  // 设置响应信息的数据格式
+  responseType: 'json',
+  // 上传进度
+  onUploadProgress: function(progressEvent){ },
+  // 下载进度
+  onDownloadProgress: function (progressEvent){ },
+  // 是否对响应体进行解压缩
+  decompress: true,
+  // 在重定向之前调用，处理重定向请求
+  beforeRedirect: function (options, responseDetails:{headers}){},
+  // transport: 
+  // 执行 http 请求时添加选项
+  httpAgent: new http.Agent({keepAlive: true}),
+  // 执行 https 请求时添加选项
+  httpsAgent: new https.Agent({keepAlive: true}),
+  // 处理取消请求
+  cancelToken: new CancelToken(function(cancel){}),
+  // 定义要在 nodejs 中使用 UNIX 套接字
+  socketPath: null,
+  // 定义解码响应的编码，只在 nodejs 中生效
+  responseEncoding: "utf-8",
+}
+```
+
+## Axios 处理错误
+
+> Axios 的 AxiosError 继承自 Error 类，兼容了其他平台的一些错误属性，同时还拥有自定义的属性（`config、code、status`）和方法（`ToJSON`）
+
+```js
+/**
+ * @param message 错误信息
+ * @param code: 错误码
+ * @param config: 配置
+ * @param request: 请求信息
+ * @param response: 响应信息
+ * @returns Error 错误
+*/
+function AxiosError(message, code, config, request, response){
+  Error.call(this);
+  this.message = message;
+  this.name = "AxiosError";
+  code && this.code = code;
+  config && this.config = config;
+  request && this.request = request;
+  response && this.response = response;
+}
+// 继承
+function inherits(constructor, superConstructor, props, descriptors){
+  constructor.prototype = Object.create(superConstructor.prototype, descriptors);
+  constructor.prototype.constructor = constructor;
+  props && Object.assign(construtor.prototype, props)
+}
+// AxiosError 继承了 Error 的属性，同时自定义了 ToJSON 方法
+inherits(AxiosError, Error, {
+  ToJSON:function (){
+    return {
+      // 标准属性
+      // 错误信息
+      message: this.message,
+      // 错误名称
+      name: this.name,
+      // 微软
+      // 错误描述
+      description: this.description,
+      number: this.number,
+      // Mozilla
+      // 错误出现的文件
+      fileName: this.fileName,
+      // 错误出现在第几行
+      lineNumber: this.lineNumber,
+      // 错误出现在第几列
+      columnNumber: this.columnNumber,
+      // 错误信息栈
+      stack: this.stack,
+      // Axios 拥有的属性
+      // 配置
+      config: this.config,
+      // 错误状态码
+      code: this.code,
+      // 响应状态
+      status: this.response && this.response.status ? this.response.status : null
+    }
+  }
+})
+```
