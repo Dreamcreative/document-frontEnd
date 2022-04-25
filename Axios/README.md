@@ -170,3 +170,50 @@ inherits(AxiosError, Error, {
   }
 })
 ```
+
+## Axios 拦截器 Interceptor
+
+> Axios 的拦截器包括了 拦截器注册 `use(fulfilled, rejected, options)`、拦截器取消`eject(id)`、拦截器遍历`forEach(callback)`等方法
+
+```js
+function InterceptorManager(){
+  // 存储拦截器
+  this.handles= [];
+}
+/**
+ * @param fulfilled 处理成功回调
+ * @param rejected 处理失败回调
+ * @returns id number 返回当前拦截器的 ID ,就是当前 拦截器的 索引
+*/
+InterceptorManager.prototype.use = function (fulfilled, rejected, options){
+  this.handles,push({
+    // 成功处理函数
+    fulfilled: fulfilled,
+    // 失败处理函数
+    rejected: rejected,
+    // 是否同步
+    synchronous: options? options.synchronous: false,
+    runWhen: options? options.runWhen : null
+  })
+  return this.handles.length - 1;
+}
+
+// 删除拦截器
+/**
+ * @param id use 返回的 拦截器 ID 
+*/
+InterceptorManager.prototype.eject = function (id){
+  if(this.handles[id]){
+    this.handles[id] = null;
+  }
+}
+
+// 使用传入的 callback 回调，遍历调用 注册的 interceptor 拦截器
+InterceptorManager.prototype.forEach = function (fn){
+  this.handles.forEach((interceptor)=>{
+    if(interceptor !== null){
+      fn(interceptor)
+    }
+  })
+}
+```
