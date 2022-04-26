@@ -102,6 +102,8 @@ const otherConfig={
   httpsAgent: new https.Agent({keepAlive: true}),
   // 处理取消请求
   cancelToken: new CancelToken(function(cancel){}),
+  // 另一种方式 用来取消 axios 请求
+  signal: new AbortController().signal,
   // 定义要在 nodejs 中使用 UNIX 套接字
   socketPath: null,
   // 定义解码响应的编码，只在 nodejs 中生效
