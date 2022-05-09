@@ -38,7 +38,7 @@
 
 > webpack 处理 css 需要使用两个关键的 loader :`css-loader`、`style-loader`
 
-  * `css-loader`:导入 css 模块，并对 css 代码今夕编译处理
+  * `css-loader`:导入 css 模块，并对 css 代码进行编译处理
   * `style-loader`: 在页面中创建 `<style>`标签，将 css 内容写入标签中
 
 > `css-loader`的使用顺序必须要在 `style-loader`的前面，因为只有完成了编译过程，才可以对 css 代码进行插入
