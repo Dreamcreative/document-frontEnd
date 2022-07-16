@@ -18,6 +18,8 @@
     * Last-Event-ID
     * Content-Type:只限于三个值`application/x-www-form-urlencoded`、`multipart/form-data`、`text/plain`
 
+* 这样划分的原因是，表单在历史上一直可以跨域发出请求。简单请求就是表单请求，浏览器沿袭了传统的处理方式，不把行为复杂化
+
 ## 非简单请求
 
 > 除了`简单请求`的其他请求都是`非简单请求`，`非简单请求`会在发起真正的请求前，先发送一个`预检请求 OPTIONS`,向服务器询问，当前网页所在的域名是否在服务器的许可名单中
