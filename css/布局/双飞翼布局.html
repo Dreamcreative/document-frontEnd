@@ -7,6 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>双飞翼布局</title>
   <style>
+    /* 双飞翼布局 使用了 浮动 float + margin-left 负值
+      相对于 圣杯布局的 float + margin-left 负值 + position ,更简单
+      有利于 页面的主要内容部分 优先渲染
+    */
     .container {
       overflow: hidden;
     }
@@ -40,6 +44,7 @@
       background-color: rgb(48, 31, 209);
       margin-left: -100%;
     }
+
   </style>
 </head>
 
