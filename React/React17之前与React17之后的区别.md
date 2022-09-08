@@ -17,7 +17,65 @@
 
 > React 17 之前，当使用 JSX 时，编译器会调用 `React.createElement()`，所以需要在组件中，手动引入 React `import React from 'react'`.
 
+```jsx
+import React from 'react';
+function App(){
+  return <div>
+    <img src="avatar.png" className="profile" />
+    <h3>{[user.firstName, user.lastName].join(" ")}</h3>
+  </div>
+}
+
+// babel 转化后，会通过 React.createElement(type, props, children) 方法将 JSX 转化为 React 元素
+
+"use strict";
+
+function App() {
+  return /*#__PURE__*/ React.createElement(
+    "div",
+    null,
+    /*#__PURE__*/ React.createElement("img", {
+      src: "avatar.png",
+      className: "profile"
+    }),
+    /*#__PURE__*/ React.createElement(
+      "h3",
+      null,
+      [user.firstName, user.lastName].join(" ")
+    )
+  );
+}
+```
+
 > React 17 之后，为 React 包引入了两个新的入口点`react/jsx-runtime` 和 `react/jsx-dev-runtime` ，不再需要在组件顶部引入 React
+
+```jsx
+function App(){
+  return <div>
+    <img src="avatar.png" className="profile" />
+    <h3>{[user.firstName, user.lastName].join(" ")}</h3>
+  </div>
+}
+// babel 8 转化后，会自动引入 react/jsx-runtime,不再调用 React.createElement(type, props, children)
+
+"use strict";
+
+var _jsxRuntime = require("react/jsx-runtime");
+
+function App() {
+  return /*#__PURE__*/ (0, _jsxRuntime.jsxs)("div", {
+    children: [
+      /*#__PURE__*/ (0, _jsxRuntime.jsx)("img", {
+        src: "avatar.png",
+        className: "profile"
+      }),
+      /*#__PURE__*/ (0, _jsxRuntime.jsx)("h3", {
+        children: [user.firstName, user.lastName].join(" ")
+      })
+    ]
+  });
+}
+```
 
 ## 等等 。。。
 
