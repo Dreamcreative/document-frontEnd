@@ -11,7 +11,7 @@ var threeSumClosest = function (nums, target) {
     排序 + 双指针 方法
    */
   // nums 排序
-  nums.sort((a, b) => a - b)
+  nums.sort((a, b) => a - b);
   const len = nums.length;
   // 默认最接近的值
   let nearest = nums[0] + nums[1] + nums[2];
@@ -26,7 +26,7 @@ var threeSumClosest = function (nums, target) {
       // 判断 target 到 sum 的距离，判断 target 到 nearset 的距离
       // 如果 target 到 sum 的距离 小于 目前 target 到 nearest 的距离，更新 nearest
       if (Math.abs(target - sum) < Math.abs(target - nearest)) {
-        nearest = sum
+        nearest = sum;
       }
       if (sum === target) {
         // 三值和 等于 target, 直接返回
@@ -36,7 +36,7 @@ var threeSumClosest = function (nums, target) {
         R--;
       } else if (sum < target) {
         // 三值和 小于 target,表示 当前值偏小，左指针右移
-        L++
+        L++;
       }
     }
   }

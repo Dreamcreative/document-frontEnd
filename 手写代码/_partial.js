@@ -3,7 +3,7 @@
 // 什么是元，元是只函数参数的个数，
 
 /**
- * 
+ *
  */
 function _partial() {
   const fn = [].shift.call(arguments);
@@ -11,5 +11,5 @@ function _partial() {
   return function () {
     let newArgs = args.concat([...arguments]);
     return fn.apply(this, newArgs);
-  }
+  };
 }

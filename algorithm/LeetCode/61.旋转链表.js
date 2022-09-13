@@ -24,7 +24,7 @@ var rotateRight = function (head, k) {
   const len = getLen(head);
   // 获取节点需要移动的位置数，k 可能会大于 节点的总长度。
   // 例如 如果 k 与节点长度相同，即使节点移动了，最后得到的节点仍然与未移动前的节点相同，相当于没有移动
-  let move = len - k % len;
+  let move = len - (k % len);
   if (move === 0) return head;
   let node = head;
   // 用来保存需要向后移动的节点 ，也就是第一部分节点
@@ -37,7 +37,7 @@ var rotateRight = function (head, k) {
     move--;
     // 当 move 移动完后，将 第一部分的节点尾部置为 null
     if (move === 0) {
-      temp.next = null
+      temp.next = null;
     }
   }
   // 用来保存 需要向前移动的节点，也就是第二部分
@@ -86,13 +86,13 @@ var rotateRight2 = function (head, k) {
   let node = head;
   // 计算链表长度，同时将节点移动到 尾结点
   while (node.next) {
-    node = node.next
+    node = node.next;
     len++;
   }
   // 将链表首尾相连
   node.next = head;
   // 计算环的移动位置
-  let move = len - k % len;
+  let move = len - (k % len);
   if (move === 0) return head;
   // 用来保存最终返回的链表
   let result = new ListNode();
@@ -118,4 +118,4 @@ var rotateRight2 = function (head, k) {
   }
   // 最后返回节点
   return result.next;
-}
+};

@@ -4,18 +4,18 @@
 
 > 先判断新节点是否是 `Fragment（空标签）`,如果是空标签，则使用新节点的子节点 `children` 进行 `DOM diff`
 
-1. 单节点 
+1.  单节点
 
     > 单节点 `typeof child === 'object' && typeof child !== null`的节点
 
     1. 获取新节点的 key 属性，遍历旧节点。`reconcileSingleElement()`
-    
+
        1. 如果新旧节点的 `key 属性` 和 `element.tag 节点类型` 都相同，则进行节点复用。先给旧节点的兄弟节点打上 `Deletion 删除标记`，再通过旧 fiber 节点和新节点的 `props`，生成新的 fiber 节点，并设置新节点的父 fiber 节点，返回
        2. 如果新旧节点的 `key 属性`不相等，则给当前旧节点打上 `Deletion 删除标记`，继续对比旧节点的兄弟节点 `fiber.sibling`。
        3. 如果在旧节点中没有找到可复用的节点，那么根据新节点创建一个新的 fiber 节点，并设置新节点的父 fiber 节点，返回
        4. 给返回的节点打上 `Placement 更新标记 (placeSingleChild())`(无论是通过`旧节点复用的 fiber 节点`或者是`新节点创建的 fiber 节点`)
 
-2. 文本节点
+2.  文本节点
 
     > 文本节点 `typeof child === 'string' || typeof child === 'number'`的节点
 
@@ -23,52 +23,52 @@
     2. 如果旧节点不可复用，则给当前 fiber 节点及其兄弟节点都打上 `Deletion 删除标记`，然后通过新节点重新生成一个 fiber 节点，返回
     3. 给返回的节点打上`Placement 更新标记(placeSingleChild())`(无论是通过`旧节点复用的 fiber 节点`还是`新节点创建的 fiber 节点`)
 
-3. 多节点
+3.  多节点
 
     > 多节点`isArray(child)`
 
     > 通过两轮遍历
 
-    1. 第一轮遍历 - `处理节点的更新，react 团队发现更新操作发生的频率更高`
+    1.  第一轮遍历 - `处理节点的更新，react 团队发现更新操作发生的频率更高`
 
-      1. 遍历新节点
+    1.  遍历新节点
 
-        1. 通过 `newChild[newIdx]`和`oldFiber`比对，
-        
-          1. 新节点是文本节点`typeof newChild ==='string' || typeof newChild === 'number'`。
-          
+    1.  通过 `newChild[newIdx]`和`oldFiber`比对，
+
+    1.  新节点是文本节点`typeof newChild ==='string' || typeof newChild === 'number'`。
+
             * 如果 `key 属性相同`，则进行旧节点复用，通过旧 fiber 节点和新节点内容，生成一个 fiber 节点
             * 如果 `key 不相同`,则`直接返回 null`，跳出第一轮遍历，表示可能发生了节点的移动或删除
 
-          2. 新节点是单节点`typeof newChild === 'object' && newChild !== null`
+        2. 新节点是单节点`typeof newChild === 'object' && newChild !== null`
 
-            * 如果新旧节点的 `key` 和 `节点类型`都相等，则进行节点复用，
-            * 如果新旧节点的 `key 相等`，但是`节点类型不等`，则`直接返回 null`，跳出第一轮遍历，表示可能发生的节点的移动或删除
+           - 如果新旧节点的 `key` 和 `节点类型`都相等，则进行节点复用，
+           - 如果新旧节点的 `key 相等`，但是`节点类型不等`，则`直接返回 null`，跳出第一轮遍历，表示可能发生的节点的移动或删除
 
-          3. 新节点是数组，`isArray(newChild)`
+        3. 新节点是数组，`isArray(newChild)`
 
-            > 如果新旧节点 key 相同
+           > 如果新旧节点 key 相同
 
-            * 旧节点为空或旧节点不为空标签`Fragment`，则根据新节点创建一个 fiber 节点
-            * 如果旧节点存在，或者旧节点为 `Fragment`，则复用旧节点
+           - 旧节点为空或旧节点不为空标签`Fragment`，则根据新节点创建一个 fiber 节点
+           - 如果旧节点存在，或者旧节点为 `Fragment`，则复用旧节点
 
-        2. 如果新旧节点的无法复用，会直接返回 null,直接跳出第一轮遍历
-    
-     2. 第一轮遍历后，可能出现一下几种情况
+        4. 如果新旧节点的无法复用，会直接返回 null,直接跳出第一轮遍历
+
+    1.  第一轮遍历后，可能出现一下几种情况
 
         1. 新节点遍历完了，那么剩余的旧节点旧需要被打上`Deletion 删除标记`
         2. 旧节点遍历完了，那么剩余的新节点会创建新的 fiber 节点，同时打上`Placement 更新标记`
         3. 新旧节点都没有遍历完，则会进行以下的几个步骤
 
-            1. 通过旧节点，以旧节点的 `key` 或者`旧节点的节点索引`(key 不存在时)为 `键值`，旧节点为`value`生成 Map结构
-            2. 遍历新节点，通过每一个新节点的 `key 或 节点索引`去 旧节点生成的Map 结构中查找可能复用的旧节点`updateFromMap()`。
+           1. 通过旧节点，以旧节点的 `key` 或者`旧节点的节点索引`(key 不存在时)为 `键值`，旧节点为`value`生成 Map 结构
+           2. 遍历新节点，通过每一个新节点的 `key 或 节点索引`去 旧节点生成的 Map 结构中查找可能复用的旧节点`updateFromMap()`。
 
-                * 如果找到可复用的旧节点，则进行节点复用，返回。
-                * 如果找不到可复用的旧节点，则根据新节点，创建一个新的 fiber，返回。
-                * 如果返回的节点是复用节点，则在Map 结构中删除 复用的节点。
-                * 继续遍历下一个新节点
-            
-            3. 第二轮遍历结束后，遍历旧节点 Map 结构，给剩余的旧节点打上 `Deletion 删除标记`，表示新节点有新插入的内容节点
+              - 如果找到可复用的旧节点，则进行节点复用，返回。
+              - 如果找不到可复用的旧节点，则根据新节点，创建一个新的 fiber，返回。
+              - 如果返回的节点是复用节点，则在 Map 结构中删除 复用的节点。
+              - 继续遍历下一个新节点
+
+           3. 第二轮遍历结束后，遍历旧节点 Map 结构，给剩余的旧节点打上 `Deletion 删除标记`，表示新节点有新插入的内容节点
 
 ## React 17.0.2 源码 /package/react-reconciler/src/ReactChildFiber.new.js
 
@@ -77,7 +77,7 @@
 reconcileChildren(
     // 当前 fiber 节点
     current,
-    // 父 fiber 
+    // 父 fiber
     workInProgress,
     // 新生产的 ReactElement 内容
     nextChildren,
@@ -114,7 +114,7 @@ reconcileChildFibers(
     lanes
 ){
     // 判断新的 ReactElement 内容最外层是不是 fragment 类型， 如果是 fragment，则比较其子节点 children
-    const isUnkeyedTopLevelFragment = 
+    const isUnkeyedTopLevelFragment =
         typeof newChild === 'object' &&
         newChild !== null &&
         newChild.type === REACT_FRAGMENT_TYPE &&
@@ -279,7 +279,7 @@ reconcileSingleElement(
     }
     // 遍历旧节点之后，没有发现与新节点 key 和节点类型都相同的节点
     if(element.type === REACT_FRAGMENT_TYPE){
-        // 如果新节点是 Fragment 
+        // 如果新节点是 Fragment
         // 创建一个 Fragment fiber
         const created = createFiberFromFragment(
             element.props.children,
@@ -326,7 +326,7 @@ placeSingleChild(
       第一次循环结束后：
         如果新节点 newChildren 遍历完了，如果还有剩余的 oldFiber,表示这些节点都将被删除，打上 Deletion 标记
         如果新节点 newChildren 没有遍历完，但是 oldFiber，遍历完了，表示剩余的 newChildren 节点，都是新增节点，给剩余的新节点创建 fiber,打上 Placement 新增标记，同时将新生成的 fiber 节点加到 fiber 单向链表树中
-      
+
       如果新旧节点都还有剩余，那么将进入第二轮遍历中
 
     第二次遍历
@@ -378,7 +378,7 @@ reconcileChildrenArray(
             多节点时，
             如果新旧节点 key和 节点类型相同，则进行复用
             如果新旧节点不可复用 则返回 null
-        */ 
+        */
         const newFiber = updateSlot(
             returnFiber,
             oldFiber,
@@ -448,7 +448,7 @@ reconcileChildrenArray(
         // 根据旧节点的 key 或 index 索引，生成 Map
         // 根据新节点的 key 或者 index 索引去 Map 中查找可复用旧节点
         // 新节点为 文本节点、单节点或多节点
-        // 如果旧节点能复用，就复用旧节点，不能复用就新生成 fiber 节点 
+        // 如果旧节点能复用，就复用旧节点，不能复用就新生成 fiber 节点
         const newFiber = updateFromMap(
             existingChildren,
             returnFiber,
@@ -575,7 +575,7 @@ createFiberFromText(
 }
 
 /**
-    如果新节点是 文本节点 
+    如果新节点是 文本节点
         如果旧节点是文本节点，克隆一个新的节点 节点复用
         如果旧节点不是文本节点，创建一个新的文本节点
     如果新节点是 单节点
@@ -609,7 +609,7 @@ updateSlot(
     if(typeof newChild ==='object' && newChild!==null){
         switch(newChild.$$typeof){
             // 如果是 react 普通节点
-            case REACT_ELEMENT_TYPE: 
+            case REACT_ELEMENT_TYPE:
             // 如果新节点的key 与旧节点的key 相等，表示节点可以复用
                 if(newChild.key === key){
                     // 如果新节点的类型是 空标签 <></>
@@ -630,7 +630,7 @@ updateSlot(
                 }else{
                     return null;
                 }
-            case REACT_PORTAL_TYPE: 
+            case REACT_PORTAL_TYPE:
                 // 节点类型 为 portal
                 if (newChild.key === key) {
                     return updatePortal(returnFiber, oldFiber, newChild, lanes);
@@ -880,7 +880,7 @@ updateFromMap(
 }
 ```
 
-## 参考 
+## 参考
 
-* [React17源码解析(5) —— 全面理解diff算法](https://juejin.cn/post/7020595059095666724)
-* [浅析React17 diff 算法源码|8月更文挑战](https://juejin.cn/post/6991656792639930382)
+- [React17 源码解析(5) —— 全面理解 diff 算法](https://juejin.cn/post/7020595059095666724)
+- [浅析 React17 diff 算法源码|8 月更文挑战](https://juejin.cn/post/6991656792639930382)

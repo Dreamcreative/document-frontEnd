@@ -26,8 +26,8 @@ var mySqrt = function (x) {
       left = mid + 1;
     } else {
       // mid*mid > x right 左移
-      right = mid - 1
+      right = mid - 1;
     }
   }
   return n;
-}
+};

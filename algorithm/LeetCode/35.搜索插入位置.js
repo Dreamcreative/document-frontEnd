@@ -27,8 +27,8 @@ var searchInsert = function (nums, target) {
     } else {
       // 中间值 小于目标值
       // 左指针 移动到 中间值的右边
-      left = mid + 1
+      left = mid + 1;
     }
   }
   return n;
-}
+};

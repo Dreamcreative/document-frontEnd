@@ -13,7 +13,7 @@
  * 描述前一项，这个数是 11 即 “ 二 个 1 ” ，记作 "21"
  * 描述前一项，这个数是 21 即 “ 一 个 2 + 一 个 1 ” ，记作 "1211"
  * 描述前一项，这个数是 1211 即 “ 一 个 1 + 一 个 2 + 二 个 1 ” ，记作 "111221"
-*/
+ */
 
 /**
  * @param {number} n
@@ -31,7 +31,7 @@ var countAndSay = function (n) {
     // j 记录 相同整数的 长度
     let i = 0;
     let j = 1;
-    for (; i < result.length;) {
+    for (; i < result.length; ) {
       const first = result.charAt(i);
       const next = result.charAt(j);
       // 设置当前需要记录长度的值
@@ -59,6 +59,6 @@ var countAndSay = function (n) {
     result = tempStr;
     // 当前 n 已处理完成，进行下移轮的处理
     n--;
-  } while (n - 1 !== 0)
+  } while (n - 1 !== 0);
   return result;
-}
+};

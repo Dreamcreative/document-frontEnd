@@ -16,10 +16,7 @@
 <link media="screen" rel="stylesheet" type="text/css" href="parent.css" />
 
 <!-- parent.css -->
-@import url('child1.css');
-@import url('child2.css');
-@import url('child3.css');
-@import url('child4.css');
+@import url('child1.css'); @import url('child2.css'); @import url('child3.css'); @import url('child4.css');
 ```
 
 > 第二个例子：`@import`嵌入在 HTML `<style></style>`标签中，也是`并行加载的，只是加载顺序随机`
@@ -33,7 +30,7 @@
 </style>
 ```
 
-> 在第一个例子中，如果`parent.css`中只是引入css,而没有其他 css ,`@import`会立即加载。但是如果 `parent.css`中除了引入其他css 外，还有其他的css 时，这时 `@import`会等待其他css 解析下载完成之后才会开始加载，产生`阻塞`行为
+> 在第一个例子中，如果`parent.css`中只是引入 css,而没有其他 css ,`@import`会立即加载。但是如果 `parent.css`中除了引入其他 css 外，还有其他的 css 时，这时 `@import`会等待其他 css 解析下载完成之后才会开始加载，产生`阻塞`行为
 
 ```css
 /* 这种具有 其他 css 的情况，@import 引入的 css 会等待 下面的css 解析、加载完成之后，才开始加载 */
@@ -43,8 +40,8 @@
 @import url('child3.css');
 @import url('child4.css');
 
-.box{
-  font-size:20px;
+.box {
+  font-size: 20px;
 }
 ```
 

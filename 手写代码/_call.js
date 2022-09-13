@@ -11,4 +11,4 @@ Function.prototype.myCall = function (context, ...args) {
   const result = context.fn(...args);
   delete context.fn;
   return result;
-}
+};

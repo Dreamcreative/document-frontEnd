@@ -2,23 +2,23 @@
 
 > Redux 本身只处理`同步的action`，如果想要处理`异步的 action`，那么需要使用 `Redux-thunk`、`Redux-promise`、`Redux-saga` 等中间件
 
-> Redux 状态管理于 React 之间没有关系。Redux 支持 React、Angular、Ember、jQuery甚至是 JavaScript
+> Redux 状态管理于 React 之间没有关系。Redux 支持 React、Angular、Ember、jQuery 甚至是 JavaScript
 
 ## 三大原则
 
 1. 单一数据流
 
-    > 整个应用的`全局 state` 被存储在一个对象中，并且是`唯一的`
+   > 整个应用的`全局 state` 被存储在一个对象中，并且是`唯一的`
 
-2. state只读
+2. state 只读
 
-    > 唯一改变 state 的方式，就是触发 `action`, action 是用于描述已发生事件的普通对象
+   > 唯一改变 state 的方式，就是触发 `action`, action 是用于描述已发生事件的普通对象
 
 ```js
 store.dispatch({
   type: 'COMPLETE_TODO',
   index: 1
-})
+});
 ```
 
 3. 使用纯函数来执行修改
@@ -40,23 +40,24 @@ function visibilityFilter(state = 'SHOW_ALL', action) {
 
 1. [createStore(reducer, state, enhance)](./createStore.js) 创建一个 store
 
-    > 参数
+   > 参数
 
-    1. reducer：修改 state 的方法
-    2. state：初始 state
-    3. enhance：传入的 middleware 中间件
+   1. reducer：修改 state 的方法
+   2. state：初始 state
+   3. enhance：传入的 middleware 中间件
 
-    > 返回值
+   > 返回值
 
-    1. getState():获取 state 值
-    2. subscribe(listener)：订阅函数, 返回一个解除订阅函数
-    3. dispatch(action)：触发 action 更新state
-    4. replaceReducer(reducer): 修改 reducer 函数
+   1. getState():获取 state 值
+   2. subscribe(listener)：订阅函数, 返回一个解除订阅函数
+   3. dispatch(action)：触发 action 更新 state
+   4. replaceReducer(reducer): 修改 reducer 函数
 
 2. [combineReducers(reducers)](./combineReducers.js) 合并 reducer 函数
 
-    > 参数
-    1. reducers 需要合并的 reducer 方法
+   > 参数
+
+   1. reducers 需要合并的 reducer 方法
 
 ```js
 combineReducers(reducers){
@@ -86,7 +87,7 @@ const store = createState(reducer, initState);
 store.dispatch = exception(time(logger(store.dispatch)));
 
 // 之后
-const newMiddleware =  applyMiddleware(logger,exception,time);
+const newMiddleware = applyMiddleware(logger, exception, time);
 const store = createStore(reduncer, initState, newMiddleware);
 ```
 
@@ -121,47 +122,47 @@ compose(...fns){
 
 ```js
 const infoReducer = (state, action) => {
-    switch (action.type) {
-        case 'INCREMENT':
-            return {
-                ...state,
-                count: state.count + 1
-            }
-        case 'DECREMENT':
-            return {
-                ...state,
-                count: state.count - 1
-            }
-        default:
-            return state
-    }
-}
+  switch (action.type) {
+    case 'INCREMENT':
+      return {
+        ...state,
+        count: state.count + 1
+      };
+    case 'DECREMENT':
+      return {
+        ...state,
+        count: state.count - 1
+      };
+    default:
+      return state;
+  }
+};
 
 // 处理之前
 const state = {
-  count:0
-}
-const store = createStore(infoReducer, state)
-store.dispatch({type:'INCREMENT'})
-store.dispatch({type:'DECREMENT'})
+  count: 0
+};
+const store = createStore(infoReducer, state);
+store.dispatch({ type: 'INCREMENT' });
+store.dispatch({ type: 'DECREMENT' });
 
 // 处理之后 ,隐藏了 action 和 dispatch
 function increment() {
   return {
     type: 'INCREMENT'
-  }
+  };
 }
 function decrement(name) {
   return {
     type: 'DECREMENT',
     name: name
-  }
+  };
 }
 const state = {
-  count:0
-}
-const store = createStore(infoReducer, state)
-const actions = bindActionCreators({increment,decrement}, store.dispatch);
+  count: 0
+};
+const store = createStore(infoReducer, state);
+const actions = bindActionCreators({ increment, decrement }, store.dispatch);
 actions.increment();
 actions.decrement();
 ```
@@ -190,13 +191,11 @@ bindActionCreators(actions, dispatch){
 // 中间件格式
 
 // store ：传入 middleware 的 store 对象 ，具有 getState() 方法
-loggerMiddleware= (store)=>{
+loggerMiddleware = store => {
   // dispatch：触发 action 的函数
-  return (dispatch)=>{
+  return dispatch => {
     // action：修改触发的 action
-    return (action)=>{
-
-    }
-  }
-}
+    return action => {};
+  };
+};
 ```

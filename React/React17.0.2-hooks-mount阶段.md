@@ -4,12 +4,12 @@
 
 > `HooksDispatcherOnMountInDEV` hooks 在挂载阶段使用的方法
 
-### useState(initialState) 
+### useState(initialState)
 
 > 使用
 
-   1. `let [number, setNumber] = useState(0)`
-   2. `let [number, setNumber]= useState(()=> 0)`
+1.  `let [number, setNumber] = useState(0)`
+2.  `let [number, setNumber]= useState(()=> 0)`
 
 > 返回一个数组，数组第一项用于读取此时的 state 值，第二项用于更新 state 函数
 
@@ -45,17 +45,17 @@ mountState(initialState){
  * 当 useReducer 传入第三个参数时， 第二个参数 initialCount 会作为第三个参数 init 函数的参数
  * 是为了 useReducer 延迟初始化设计的。为了避免 useReducer 在初始化时，巨大的参数带来影响
  */
-function init (initialCount){
-    return {count: initialCount};
+function init(initialCount) {
+  return { count: initialCount };
 }
-function reducer(state, action){
-    switch(action.type){
-        case 'reset':
-            return init(action.payload);
-    }
+function reducer(state, action) {
+  switch (action.type) {
+    case 'reset':
+      return init(action.payload);
+  }
 }
-function Counter({initialCount}){
-    const [state, dispatch]=useReducer(reducer, initialCount, init)
+function Counter({ initialCount }) {
+  const [state, dispatch] = useReducer(reducer, initialCount, init);
 }
 ```
 
@@ -63,7 +63,7 @@ function Counter({initialCount}){
 // useReducer 两个参数
 
 const initialState = {
-  count: 5,
+  count: 5
 };
 function reducer(state, action) {
   switch (action.type) {
@@ -71,7 +71,7 @@ function reducer(state, action) {
       return initialState;
   }
 }
-function Counter({initialCount}) {
+function Counter({ initialCount }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 }
 ```
@@ -103,13 +103,13 @@ mountReducer(reducer, initialArg, init){
 > 使用
 
 ```js
-useEffect(()=>{
-    // dosomething
-    return ()=>{
-        // 返回一个销毁函数 ，比如清除定时器，解绑节点事件等
-        // 会在每次组件更新时执行，可以通过传入 deps 来改变执行次数
-    }
-},deps)
+useEffect(() => {
+  // dosomething
+  return () => {
+    // 返回一个销毁函数 ，比如清除定时器，解绑节点事件等
+    // 会在每次组件更新时执行，可以通过传入 deps 来改变执行次数
+  };
+}, deps);
 ```
 
 ```js
@@ -160,19 +160,18 @@ pushEffect(tag, create, destory, deps){
 }
 ```
 
-
 ### useLayoutEffect(create, deps)
 
 > 使用
 
 ```js
-useLayoutEffect(()=>{
-    // dosomething
-    return ()=>{
-        // 返回一个销毁函数 ，比如清除定时器，解绑节点事件等
-        // 会在每次组件更新时执行，可以通过传入 deps 来改变执行次数
-    }
-},deps)
+useLayoutEffect(() => {
+  // dosomething
+  return () => {
+    // 返回一个销毁函数 ，比如清除定时器，解绑节点事件等
+    // 会在每次组件更新时执行，可以通过传入 deps 来改变执行次数
+  };
+}, deps);
 ```
 
 ```js
@@ -220,23 +219,24 @@ pushEffect(tag, create, destory, deps){
 
 > useEffect 和 useLayoutEffect 的区别
 
-   1. useLayoutEffect 用来代替 `componentDidMount`、`componentDidUpdate`生命周期，因为 useLayoutEffect 的 create 函数的调用位置、时机一致，且都是被`同步调用，阻塞浏览器渲染`。
-   2. useLayoutEffect 的 destory 函数的调用位置与 `componentWillUnmount`一致，且是同步调用。而 useEffect 的 destroy 函数相当于`componentDidUnmount`（React 没有这个生命周期）
-   3. useLayoutEffect 是在 `DOM 更新后，UI渲染前，同步调用`,`会阻塞 UI 渲染`
-   4. useEffect 和 useLayoutEffect 在 `Reader 阶段`打上的 `effectTag`不同，导致 useEffect 和 useLayoutEffect 的执行时间不同
-   5. useEffect 和 useLayoutEffect 的回调函数和销毁函数在每次更新时都会执行。如果想要只执行一次，在 useEffect 和 useLayoutEffect 的依赖项中传入空数组 `useEffect(()=>{},[])`、`useLayoutEffect(()=>{},[])`
-   6. 在`commit 阶段` 分为三个小阶段 `before Mutation`、`Mutation`、`Layout`。
-        
-        1. 在 `before Mutation 阶段` 会执行`异步调度`useEffect
-        2. 在 `commit-Mutation 阶段`会执行`所有 useLayoutEffect 的销毁函数`
-        3. 在 `commit-Layout 阶段`会同步执行`useLayoutEffect 的回调函数`，异步执行`useEffect 的销毁函数和回调函数`
+1.  useLayoutEffect 用来代替 `componentDidMount`、`componentDidUpdate`生命周期，因为 useLayoutEffect 的 create 函数的调用位置、时机一致，且都是被`同步调用，阻塞浏览器渲染`。
+2.  useLayoutEffect 的 destory 函数的调用位置与 `componentWillUnmount`一致，且是同步调用。而 useEffect 的 destroy 函数相当于`componentDidUnmount`（React 没有这个生命周期）
+3.  useLayoutEffect 是在 `DOM 更新后，UI渲染前，同步调用`,`会阻塞 UI 渲染`
+4.  useEffect 和 useLayoutEffect 在 `Reader 阶段`打上的 `effectTag`不同，导致 useEffect 和 useLayoutEffect 的执行时间不同
+5.  useEffect 和 useLayoutEffect 的回调函数和销毁函数在每次更新时都会执行。如果想要只执行一次，在 useEffect 和 useLayoutEffect 的依赖项中传入空数组 `useEffect(()=>{},[])`、`useLayoutEffect(()=>{},[])`
+6.  在`commit 阶段` 分为三个小阶段 `before Mutation`、`Mutation`、`Layout`。
+    1. 在 `before Mutation 阶段` 会执行`异步调度`useEffect
+    2. 在 `commit-Mutation 阶段`会执行`所有 useLayoutEffect 的销毁函数`
+    3. 在 `commit-Layout 阶段`会同步执行`useLayoutEffect 的回调函数`，异步执行`useEffect 的销毁函数和回调函数`
 
 ### useMemo(nextCreate, deps) 缓存回调返回的值，deps 依赖不变，则缓存值不变
 
 > 使用
 
 ```js
-const memoValue = useMemo(()=> {a:1}, deps);
+const memoValue = useMemo(() => {
+  a: 1;
+}, deps);
 // memoValue={a:1}
 ```
 
@@ -258,8 +258,8 @@ mountMemo(nextCreate, deps){
 > 使用
 
 ```js
-const callback = useCallback(()=>{
-    console.log(111)
+const callback = useCallback(() => {
+  console.log(111);
 }, deps);
 // callback = ()=>{console.log(111)}
 ```
@@ -275,10 +275,10 @@ mountCallback(callback, deps){
 
 > useMemo 和 useCallback 的区别
 
-   1. 都是用来缓存，useMemo 用来缓存函数返回的值，不需要再次调用。useCallback 用来缓存函数，使用时需要调用。
-   2. useMemo 会执行传入的函数，useCallback 不会执行传入的函数，而是原封不动的返回
+1.  都是用来缓存，useMemo 用来缓存函数返回的值，不需要再次调用。useCallback 用来缓存函数，使用时需要调用。
+2.  useMemo 会执行传入的函数，useCallback 不会执行传入的函数，而是原封不动的返回
 
-### useRef(initialValue) 缓存一个值，在整个生命周期内，ref的值不会改变，同时 ref 值变化不会导致页面的主动渲染
+### useRef(initialValue) 缓存一个值，在整个生命周期内，ref 的值不会改变，同时 ref 值变化不会导致页面的主动渲染
 
 > 使用
 
@@ -293,7 +293,7 @@ mountRef(initialValue){
 }
 ```
 
-### useContext(context, observedBits) 
+### useContext(context, observedBits)
 
 > 通过 `React.createContext`创建出的上下文，在子组件中通过 `useContext` 获取 Provider 提供的内容。`跨组件透传上下文`
 
@@ -302,34 +302,52 @@ mountRef(initialValue){
 ```js
 const MyContext = React.createContext(null);
 
-const Parent = ()=>{
-    const [step, setStep] = useState(0);
-    const [count, setCount] = useState(0);
-    const [number, setNumber] = useState(0);
+const Parent = () => {
+  const [step, setStep] = useState(0);
+  const [count, setCount] = useState(0);
+  const [number, setNumber] = useState(0);
 
-    return (
-        <MyContext.Provider value={{ setStep, setCount, setNumber }}>
-            <Child step={step} number={number} count={count} />
-        </MyContext.Provider>
-    );
-}
+  return (
+    <MyContext.Provider value={{ setStep, setCount, setNumber }}>
+      <Child step={step} number={number} count={count} />
+    </MyContext.Provider>
+  );
+};
 
 export default Child((props = {}) => {
-    const { setStep, setNumber, setCount } = useContext(MyContext);
+  const { setStep, setNumber, setCount } = useContext(MyContext);
 
-    return (
-        <div>
-            <p>step is : {props.step}</p>
-            <p>number is : {props.number}</p>
-            <p>count is : {props.count}</p>
-            <hr />
-            <div>
-                <button onClick={() => { setStep(props.step + 1) }}>step ++</button>
-                <button onClick={() => { setNumber(props.number + 1) }}>number ++</button>
-                <button onClick={() => { setCount(props.step + props.number) }}>number + step</button>
-            </div>
-        </div>
-    );
+  return (
+    <div>
+      <p>step is : {props.step}</p>
+      <p>number is : {props.number}</p>
+      <p>count is : {props.count}</p>
+      <hr />
+      <div>
+        <button
+          onClick={() => {
+            setStep(props.step + 1);
+          }}
+        >
+          step ++
+        </button>
+        <button
+          onClick={() => {
+            setNumber(props.number + 1);
+          }}
+        >
+          number ++
+        </button>
+        <button
+          onClick={() => {
+            setCount(props.step + props.number);
+          }}
+        >
+          number + step
+        </button>
+      </div>
+    </div>
+  );
 });
 ```
 
@@ -405,7 +423,7 @@ Parent = ()=>{
         b:'',
         ...
     }
-    */  
+    */
      return <>
         <Child cRef={parentRef}></Child>
      </>
@@ -451,7 +469,7 @@ mountEffectImpl(fiberFlags, hookFlags, create, deps){
 }
 ```
 
-### useDeferredValue(value) Concurrent模式(实验版)
+### useDeferredValue(value) Concurrent 模式(实验版)
 
 > 在 React 17.0.2 版本中，useDeferredValue 只接收一个值，不知道为什么官网中可以接收两个值。
 
@@ -459,11 +477,11 @@ mountEffectImpl(fiberFlags, hookFlags, create, deps){
 
 ```js
 function App() {
-  const [text, setText] = useState("hello");
-  const deferredText = useDeferredValue(text, { timeoutMs: 2000 }); 
+  const [text, setText] = useState('hello');
+  const deferredText = useDeferredValue(text, { timeoutMs: 2000 });
 
   return (
-    <div className="App">
+    <div className='App'>
       {/* 保持将当前文本传递给 input */}
       <input value={text} onChange={handleChange} />
       {/* 但在必要时可以将列表“延后” */}
@@ -489,7 +507,7 @@ mountDeferredValue(value){
 }
 ```
 
-### useTransition() Concurrent模式(实验版)
+### useTransition() Concurrent 模式(实验版)
 
 > 允许组件在切换到下一个界面之前等待内容加载，从而避免不必要的加载状态。它还允许组件将速度较慢的数据获取更新推迟到随后渲染，以便能够立即渲染更重要的更新
 
@@ -514,7 +532,7 @@ function App() {
       >
         Next
       </button>
-      {isPending ? " 加载中..." : null}
+      {isPending ? ' 加载中...' : null}
       <Suspense fallback={<Spinner />}>
         <ProfilePage resource={resource} />
       </Suspense>
@@ -537,4 +555,4 @@ startTranstion(setPending, callback){
 
 ## 参考
 
-* [React hook](https://zh-hans.reactjs.org/docs/hooks-faq.html#is-it-safe-to-omit-functions-from-the-list-of-dependencies)
+- [React hook](https://zh-hans.reactjs.org/docs/hooks-faq.html#is-it-safe-to-omit-functions-from-the-list-of-dependencies)

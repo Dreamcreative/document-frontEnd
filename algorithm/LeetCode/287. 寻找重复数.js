@@ -10,7 +10,7 @@ var findDuplicate = function (nums) {
   const set = new Set();
   for (let item of nums) {
     if (set.has(item)) return item;
-    set.add(item)
+    set.add(item);
   }
 
   // 二. 二分查找

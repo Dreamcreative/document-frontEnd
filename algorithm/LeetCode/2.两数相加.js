@@ -34,27 +34,27 @@ var addTwoNumbers = function (l1, l2) {
     const val1 = first ? first.val : 0;
     const val2 = second ? second.val : 0;
     const num = val1 + val2 + carry;
-    // !result 表示 result 不存在，则创建一个链表，val值为 num%10 
+    // !result 表示 result 不存在，则创建一个链表，val值为 num%10
     if (!result) {
-      result = temp = new ListNode(num % 10)
+      result = temp = new ListNode(num % 10);
     } else {
       // 表示已经存在初始节点，创建下一个节点
-      temp.next = new ListNode(num % 10)
+      temp.next = new ListNode(num % 10);
       // 临时节点赋值下一个节点
-      temp = temp.next
+      temp = temp.next;
     }
     // 获取 进位 10位进1
-    carry = Math.floor(num / 10)
+    carry = Math.floor(num / 10);
     if (first) {
       first = first.next;
     }
     if (second) {
-      second = second.next
+      second = second.next;
     }
   }
   // 当l1、l2 遍历完了，但是还存在进位，则创建下一个节点存储进位值
   if (carry) {
-    temp.next = new ListNode(carry)
+    temp.next = new ListNode(carry);
   }
-  return result
+  return result;
 };

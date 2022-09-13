@@ -4,8 +4,8 @@
 
 > 参数
 
-   1. type：需要缓存的组件
-   2. compare：自定义比较函数
+1.  type：需要缓存的组件
+2.  compare：自定义比较函数
 
 > `React.memo`通过浅比较 props 属性，来判断是否重用上次的渲染节点
 
@@ -84,9 +84,9 @@ shallowEqual(objA, objB){
 
 > 参数
 
-   1. type 节点名称
-   2. props 节点属性
-   3. children 当前节点的子节点
+1.  type 节点名称
+2.  props 节点属性
+3.  children 当前节点的子节点
 
 ```js
 createElement(type, config, children){
@@ -147,14 +147,13 @@ createElement(type, config, children){
 }
 ```
 
-
 ## React.cloneElement(element, config, children) 克隆并返回一个新的 React 元素
 
 > 参数
 
-  1. element 需要克隆的 React 元素
-  2. config 新节点包含的属性
-  3. children 新的子节点，取代目标节点 element 的子节点
+1. element 需要克隆的 React 元素
+2. config 新节点包含的属性
+3. children 新的子节点，取代目标节点 element 的子节点
 
 ```js
 // 克隆 React 元素
@@ -269,18 +268,18 @@ isValidElement(object){
 ## React.Suspense() 在组件未完成渲染前，添加一个指定的加载组件
 
 ```js
-const OtherComponent = React.lazy(()=> import('./OtherComponent'));
-function MyComponent(){
-    return(
-        <React.Suspense fallback={<Spinner />}>
-            <div>
-                <OtherComponent />
-            </div>
-        </React.Suspense>
-    )
+const OtherComponent = React.lazy(() => import('./OtherComponent'));
+function MyComponent() {
+  return (
+    <React.Suspense fallback={<Spinner />}>
+      <div>
+        <OtherComponent />
+      </div>
+    </React.Suspense>
+  );
 }
 ```
 
 ## 参考
 
-* [React Top-Level API](https://reactjs.org/docs/react-api.html)
+- [React Top-Level API](https://reactjs.org/docs/react-api.html)

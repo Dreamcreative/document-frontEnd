@@ -6,7 +6,7 @@
  */
 var isPalindrome = function (s) {
   // [^a-z] 表示匹配不在 [] 中的字符
-  const reg = /[^A-Za-z0-9]/ig;
+  const reg = /[^A-Za-z0-9]/gi;
   // 使用正则匹配 A-Za-z0-9 其他字符全设置为 ''
   const str = s.replaceAll(reg, '');
   const strLen = str.length;
@@ -20,4 +20,4 @@ var isPalindrome = function (s) {
     if (pre !== last) return false;
   }
   return true;
-}
+};

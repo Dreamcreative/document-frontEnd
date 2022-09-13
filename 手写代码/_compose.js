@@ -5,12 +5,15 @@
  */
 /**
  * 函数组合
- * @param  {...function} fns 
- * @returns 
+ * @param  {...function} fns
+ * @returns
  */
 function _compose(...fns) {
   return function (args) {
-    return fns.reduce((total, cur) => cur(total), args)
-  }
+    return fns.reduce((total, cur) => cur(total), args);
+  };
 }
-const _compose1 = (...fns) => (args) => fns.reduce((total, cur) => cur(total), args)
+const _compose1 =
+  (...fns) =>
+  args =>
+    fns.reduce((total, cur) => cur(total), args);

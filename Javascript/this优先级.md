@@ -1,4 +1,4 @@
-# this优先级
+# this 优先级
 
 ## new 绑定
 
@@ -18,9 +18,9 @@
 
 > 分为严格模式与非严格模式
 
-  * 严格模式下 this 为 window
-  * 非严格模式下 this 为 undefined
+- 严格模式下 this 为 window
+- 非严格模式下 this 为 undefined
 
 ## 箭头函数 this
 
-> 箭头函数的 this 指向外层第一个普通函数的this,无法被改变
+> 箭头函数的 this 指向外层第一个普通函数的 this,无法被改变

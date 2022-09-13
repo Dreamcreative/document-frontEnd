@@ -1,6 +1,6 @@
 # React 17.0.2 hooks update 更新阶段
 
-> hooks 是一个环形链表结构，使用 next 指向下一个 hook，所以 hook 只能在函数组件的顶级作用域中使用 
+> hooks 是一个环形链表结构，使用 next 指向下一个 hook，所以 hook 只能在函数组件的顶级作用域中使用
 
 ## update 阶段
 
@@ -23,7 +23,7 @@ type Update = {
 }
 
 type UpdateQueue={
-  pending: Update, 
+  pending: Update,
   dispatch: (A => mixed) | null,
   lastRenderedReducer: ((S, A) => S) | null,
   lastRenderedState: S | null,
@@ -35,7 +35,7 @@ type UpdateQueue={
 ```js
 function is(x: any, y: any) {
   return (
-    (x === y && (x !== 0 || 1 / x === 1 / y)) || (x !== x && y !== y) 
+    (x === y && (x !== 0 || 1 / x === 1 / y)) || (x !== x && y !== y)
   );
 }
 // 用来判断传入的两个值是否相同
@@ -44,7 +44,7 @@ is = objectIs(x, y){
   // 如果 Object.is() 方法存在就使用 Object.is()，不存在就使用自己定义的方法
   return typeof Object.is === 'function'? Object.is : is
 }
-// update 阶段的 useState 调用 updateReducer 传入的第一个参数 
+// update 阶段的 useState 调用 updateReducer 传入的第一个参数
 basicStateReducer(state, action){
   return typeof action === 'function'? action(state): action;
 }
@@ -420,6 +420,6 @@ updateTransition(){
 
 ## 参考
 
-> React v17.0.2  /package/react-reconciler/src/ReactFiberHooks.new.js
+> React v17.0.2 /package/react-reconciler/src/ReactFiberHooks.new.js
 
-* [useState](https://react.jokcy.me/book/hooks/hooks-use-state.html)
+- [useState](https://react.jokcy.me/book/hooks/hooks-use-state.html)

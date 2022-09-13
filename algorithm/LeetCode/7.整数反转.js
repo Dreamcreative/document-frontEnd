@@ -26,8 +26,8 @@ var reverse = function (x) {
     x = -x;
   }
   while (x !== 0) {
-    // 依次将 数字 x 的 尾数位提前 
-    num = num * 10 + x % 10;
+    // 依次将 数字 x 的 尾数位提前
+    num = num * 10 + (x % 10);
     // 去除 x 的 尾数位
     x = Math.floor(x / 10);
   }
@@ -35,9 +35,9 @@ var reverse = function (x) {
   if (is) {
     // num 小于最小值 为0
     if (-num < min) return 0;
-    return -num
+    return -num;
   }
   // num 大于最大值 为 0
   if (num > max) return 0;
-  return num
+  return num;
 };

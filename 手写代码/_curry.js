@@ -8,11 +8,11 @@ function _curry() {
       _args = [..._args, ...arguments];
       return temp;
     }
-    return fn.apply(this, _args)
-  }
+    return fn.apply(this, _args);
+  };
 }
 function add(...args) {
-  return args.reduce((a, b) => a + b, 0)
+  return args.reduce((a, b) => a + b, 0);
 }
-let result = _curry(add, 5, 1)
-console.log(result(5)(1, 2, 3)())
+let result = _curry(add, 5, 1);
+console.log(result(5)(1, 2, 3)());

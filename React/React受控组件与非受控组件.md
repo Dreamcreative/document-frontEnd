@@ -10,5 +10,5 @@
 
 ## 参考
 
-* [受控和非受控组件真的那么难理解吗？(React实际案例详解)](https://juejin.cn/post/6858276396968951822#heading-7)
-* [非受控组件](https://zh-hans.reactjs.org/docs/uncontrolled-components.html)
+- [受控和非受控组件真的那么难理解吗？(React 实际案例详解)](https://juejin.cn/post/6858276396968951822#heading-7)
+- [非受控组件](https://zh-hans.reactjs.org/docs/uncontrolled-components.html)

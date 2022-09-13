@@ -40,21 +40,21 @@ var twoSum = function (nums, target) {
    */
 
   const len = nums.length;
-  let obj = {}
+  let obj = {};
   // 将 数据值，以 数组索引为 key，以数组value 为对象 value;生成对象
   for (let i = 0; i < len; i++) {
-    obj[nums[i]] = i
+    obj[nums[i]] = i;
   }
   // 遍历数组
   for (let i = 0; i < len; i++) {
-    // 获取剩余值 
+    // 获取剩余值
     let rest = target - nums[i];
     let index = obj[rest];
     // 判断剩余值在 obj 是否存在
     if (index) {
-      // 存在，并且 obj中存储的下标值，不与数组中下标值相同，返回 
+      // 存在，并且 obj中存储的下标值，不与数组中下标值相同，返回
       if (index !== i) {
-        return [i, index]
+        return [i, index];
       }
       // 否则继续遍历
       continue;

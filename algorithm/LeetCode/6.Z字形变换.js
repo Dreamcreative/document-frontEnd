@@ -24,7 +24,7 @@ var convert = function (s, numRows) {
   // numRows 为1是，不需要变化
   if (numRows === 1) return s;
   // 创建一个 numRows 长度的数组，来存储 Z字变形后的字符
-  let res = new Array(numRows).fill('')
+  let res = new Array(numRows).fill('');
   // 字符 存储的索引
   let i = 0;
   // 字符的移动方向 true 向下， false 向上
@@ -35,16 +35,16 @@ var convert = function (s, numRows) {
     // 当 i 回到起始位置时， 字符的移动方向 变为向下
     if (i === 0) {
       direction = true;
-    } else if (i === numRows-1) {
+    } else if (i === numRows - 1) {
       // 当 i 快到终止位置时，字符的移动方向变为向上
       direction = false;
     }
     // 将 当前字符 添加到对应的 索引中
-    res[i] = res[i] + char
+    res[i] = res[i] + char;
     // 根据 direction 方向，判断 i 的是向上移动还是向下移动
     i = direction ? i + 1 : i - 1;
     // 将当前已插入到数组中的 字符删除，返回新的字符
-    s = s.slice(1)
+    s = s.slice(1);
   }
   // 数组拼接 返回
   return res.join('');

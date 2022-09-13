@@ -38,9 +38,13 @@ var fourSum = function (nums, target) {
           // 设置 hash 表的值
           map.set(arr + '', true);
           // 遍历 数组的值，去除重复的 左侧值
-          while (L < R && nums[L] === nums[L + 1]) { L++ }
+          while (L < R && nums[L] === nums[L + 1]) {
+            L++;
+          }
           // 遍历数组的值，去除重复的右侧值
-          while (L < R && nums[R] === nums[R - 1]) { R-- }
+          while (L < R && nums[R] === nums[R - 1]) {
+            R--;
+          }
           L++;
           R--;
         } else if (sum > target) {
@@ -48,7 +52,7 @@ var fourSum = function (nums, target) {
           R--;
         } else {
           // 和小于 target 左指针右移
-          L++
+          L++;
         }
       }
     }

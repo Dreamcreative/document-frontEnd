@@ -6,7 +6,7 @@ propertiesObject: 一个对象，作为返回新对象的自身属性，而不�
  */
 
 function _create(proto, propertiesObject) {
-  function F() { }
+  function F() {}
   F.prototype = proto;
   return new F();
 }

@@ -20,17 +20,17 @@ var canBeEqual = function (target, arr) {
   // 使用 Map 结构 将 target arr 的元素和 元素出现的次数存储
   // 然后比较 target/arr 每个元素和 每个元素出现的次数是否相等
   const tMap = new Map();
-  const aMap = new Map()
+  const aMap = new Map();
   for (let item of target) {
-    tMap.set(item, tMap.get(item) ? tMap.get(item) + 1 : 1)
+    tMap.set(item, tMap.get(item) ? tMap.get(item) + 1 : 1);
   }
   for (let item of arr) {
-    aMap.set(item, aMap.get(item) ? aMap.get(item) + 1 : 1)
+    aMap.set(item, aMap.get(item) ? aMap.get(item) + 1 : 1);
   }
   for (let [key, value] of tMap) {
     if (!aMap.get(key) || aMap.get(key) !== value) {
       return false;
     }
   }
-  return true
+  return true;
 };

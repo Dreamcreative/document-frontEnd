@@ -12,9 +12,9 @@ function _debounce1(func, wait) {
   return function () {
     if (timer) clearInterval(timer);
     timer = setTimeout(() => {
-      func.apply(this, arguments)
-    }, wait)
-  }
+      func.apply(this, arguments);
+    }, wait);
+  };
 }
 /**
  * 防抖函数
@@ -30,14 +30,14 @@ function _debounce2(func, wait, immediate) {
       let callNow = !timer;
       timer = setTimeout(function () {
         timer = null;
-      }, wait)
+      }, wait);
       if (callNow) return func.apply(this, arguments);
     } else {
       timer = setTimeout(() => {
-        func.apply(this, arguments)
-      }, wait)
+        func.apply(this, arguments);
+      }, wait);
     }
-  }
+  };
 }
 
 // 最终版
@@ -54,14 +54,13 @@ function _debounce(func, wait, immediate) {
       var callNow = !timer;
       timer = setTimeout(function () {
         timer = null;
-      }, wait)
-      if (callNow) result = func.apply(context, args)
-    }
-    else {
+      }, wait);
+      if (callNow) result = func.apply(context, args);
+    } else {
       timer = setTimeout(function () {
-        func.apply(context, args)
+        func.apply(context, args);
       }, wait);
     }
     return result;
-  }
+  };
 }

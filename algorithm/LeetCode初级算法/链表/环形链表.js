@@ -16,7 +16,7 @@ var hasCycle = function (head) {
   快慢指针 快指针走2步，慢指针走一步，如果是环形链表，快慢指针总会相遇
   如果不是环形链表，当快指针先到达 链表尾部，
    */
-  // //  快指针 
+  // //  快指针
   // let fast = head?.next;
   // // 慢指针
   // let slow = head;
@@ -50,7 +50,7 @@ var hasCycle = function (head) {
     // 查看 集合中是否存在当前节点，存在表示 链表是环形
     if (obj.has(node)) return true;
     // 向集合添加当前节点
-    obj.add(node)
+    obj.add(node);
     // 节点指向下一个节点
     node = node.next;
   }

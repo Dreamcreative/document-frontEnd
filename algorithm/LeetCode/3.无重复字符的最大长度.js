@@ -30,9 +30,9 @@ var lengthOfLongestSubstring = function (s) {
       end = map.get(char) + 1;
     }
     // 获取最大值，max 值每次都会加一，只有当遇到重复字符时并且 map中 char 的索引在[end,start) 之间， end 才会进行移动，
-    max = Math.max(max, start - end + 1)
+    max = Math.max(max, start - end + 1);
     // 设置 map 值，当前字符和字符下标，如果出现重复字符，新的字符覆盖旧字符的索引
-    map.set(char, start)
+    map.set(char, start);
   }
-  return max
+  return max;
 };

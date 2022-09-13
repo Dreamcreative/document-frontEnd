@@ -4,8 +4,8 @@
 
 > JSX 是 JavaScript 的语法扩展，类似于模板语法，或者说是类似于 XML 的 ECMAScript 语法扩展，并且具备 JavaScript 的全部功能
 
-* JSX 是 JavaScript 的语法扩展
-* JSX 具备 JavaScript 的全部功能
+- JSX 是 JavaScript 的语法扩展
+- JSX 具备 JavaScript 的全部功能
 
 ## JSX 是如何在 JavaScript 中生效的
 
@@ -21,4 +21,4 @@
 
 ## 参考
 
-* [为什么 JSX 语法这么香？](https://juejin.cn/post/7112595039863177223)
+- [为什么 JSX 语法这么香？](https://juejin.cn/post/7112595039863177223)

@@ -81,4 +81,4 @@ var reverseList = function (head) {
     node = next;
   }
   return prev;
-}
+};

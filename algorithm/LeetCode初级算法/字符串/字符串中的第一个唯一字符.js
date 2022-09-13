@@ -16,15 +16,15 @@ var firstUniqChar = function (s) {
   for (let i = 0; i < sLen; i++) {
     const item = s[i];
     if (map.has(item)) {
-      map.set(item, -1)
+      map.set(item, -1);
     } else {
-      map.set(item, i)
+      map.set(item, i);
     }
   }
   let firstIndex = sLen;
   for (let item of map.values()) {
     if (item !== -1 && item < firstIndex) {
-      firstIndex = item
+      firstIndex = item;
     }
   }
   return firstIndex === sLen ? -1 : firstIndex;

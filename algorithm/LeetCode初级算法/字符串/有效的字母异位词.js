@@ -30,7 +30,6 @@ var isAnagram = function (s, t) {
   //   }
   // }
   // return true;
-
   /**
    * 二
    * 1. 将s t 先进行排序，在比较 是否相等
@@ -39,4 +38,4 @@ var isAnagram = function (s, t) {
   // const tLen = t.length;
   // if (sLen !== tLen) return false;
   // return [...s].sort().join() === [...t].sort().join();
-}
+};

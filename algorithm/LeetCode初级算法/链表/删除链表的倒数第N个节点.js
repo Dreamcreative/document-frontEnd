@@ -50,7 +50,7 @@ var removeNthFromEnd = function (head, n) {
   while (true) {
     if (len === 1) {
       node.next = node.next.next;
-      return head
+      return head;
     }
     node = node.next;
     len--;

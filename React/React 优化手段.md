@@ -6,7 +6,7 @@
 
 ## React.memo(Component, props)
 
-> `React.PureComponent`类似，会浅比较 props,只有当 props 变化时，才会重新渲染 Component 
+> `React.PureComponent`类似，会浅比较 props,只有当 props 变化时，才会重新渲染 Component
 
 ## useMemo(callback, deps)
 
@@ -34,25 +34,25 @@
 
 > 错误边界组件可以阻止子组件渲染时报错
 
-  1. static getDerivedStateFromError()：在出错后有机会修改 state 触发最后一次渲染
-  2. componentDidCatch()：用于出错时副作用代码。会的带出错信息和堆栈
+1. static getDerivedStateFromError()：在出错后有机会修改 state 触发最后一次渲染
+2. componentDidCatch()：用于出错时副作用代码。会的带出错信息和堆栈
 
 ```js
 class MyErrorBoundary extends Component {
-  state={
+  state = {
     error: null
-  }
-  static getDerivedStateFromError(error){
+  };
+  static getDerivedStateFromError(error) {
     return {
       error: error
-    }
+    };
   }
-  componentDidCatch(err, stackInfo){
+  componentDidCatch(err, stackInfo) {
     // 错误上报
     logErrorToMyService(error, info);
   }
-  render(){
-    if(this.state.error){
+  render() {
+    if (this.state.error) {
       return <p>Something broke</p>;
     }
     return this.props.children;
@@ -62,13 +62,13 @@ class MyErrorBoundary extends Component {
 
 > [React 错误边界 官方文档](https://zh-hans.reactjs.org/docs/error-boundaries.html) 提到了四种无法 catch 错误的场景
 
-  1. 回调事件。由于回调事件执行时机不在渲染周期内。所以无法被 `错误边界组件` catch 住，只能自行 catch
-  2. 异步。比如`setTimeout`或`requestAnimationFrame`,和第一条同理
-  3. 服务器渲染
-  4. `错误边界组件`无法 catch 自身的错误。只能 catch 自身内部子组件的错误 ,无论是 类组件还是函数组件都能 catch 错误 
-  5. 额外的，无法 catch `编译时的错误`。仅仅关注`运行时错误`
+1. 回调事件。由于回调事件执行时机不在渲染周期内。所以无法被 `错误边界组件` catch 住，只能自行 catch
+2. 异步。比如`setTimeout`或`requestAnimationFrame`,和第一条同理
+3. 服务器渲染
+4. `错误边界组件`无法 catch 自身的错误。只能 catch 自身内部子组件的错误 ,无论是 类组件还是函数组件都能 catch 错误
+5. 额外的，无法 catch `编译时的错误`。仅仅关注`运行时错误`
 
 ## 参考
 
-* [精读《React Error Boundaries》](https://zhuanlan.zhihu.com/p/133632612)
-* [错误边界](https://zh-hans.reactjs.org/docs/error-boundaries.html)
+- [精读《React Error Boundaries》](https://zhuanlan.zhihu.com/p/133632612)
+- [错误边界](https://zh-hans.reactjs.org/docs/error-boundaries.html)

@@ -1,6 +1,5 @@
 # JavaScript 原型和原型链
 
-
 ## prototype `显式原型属性`
 
 > `每个函数`都有 prototype 属性，指向一个原型对象
@@ -53,7 +52,7 @@ Object.prototype.__proto__ === null;
 
 1. `Function.__proto__ === Function.prototype`
 
-> 原因 Function对象，是一个内置对象。-- 规定
+> 原因 Function 对象，是一个内置对象。-- 规定
 
 ## 怪异现象
 

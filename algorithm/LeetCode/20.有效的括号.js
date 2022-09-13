@@ -20,10 +20,10 @@ var isValid = function (s) {
    */
   // 对应关系
   const map = {
-    "(": ")",
-    "{": "}",
-    "[": "]",
-  }
+    '(': ')',
+    '{': '}',
+    '[': ']'
+  };
   // 栈
   const stack = [];
   for (let item of s) {
@@ -38,13 +38,13 @@ var isValid = function (s) {
     // }
     if (stack.length && map[stack[stack.length - 1]] === item) {
       // 如果栈中有值 并且 栈尾和当前的item 是同一种类型，将栈尾弹出
-      stack.pop()
+      stack.pop();
     } else {
       // 如果栈为空，或者 栈尾 和 当前值不是同一种类型，将当前 item 推入栈
-      stack.push(item)
+      stack.push(item);
     }
   }
   // 最后，如果是栈，则表示 字符中的 括号都是一对的，
   // 如果栈不为空，则表示 字符中的括号 存在不按顺序闭合
-  return !stack.length
+  return !stack.length;
 };

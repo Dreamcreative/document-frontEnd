@@ -52,7 +52,7 @@ var mergeTwoLists = function (l1, l2) {
 
   最终返回的链表  l1.1.next = l2.1.next = l1.2.next = l1.3.next = l2
                     1         1           2           3         3,4
-   */ 
+   */
   // l1 为空，返回l2
   if (!l1) return l2;
   // l2 为空 返回l1

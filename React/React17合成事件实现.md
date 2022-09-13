@@ -1,6 +1,6 @@
 # React 17 合成事件实现
 
-* `packages/react-dom/src/events`
+- `packages/react-dom/src/events`
 
 ## React 事件 优先级
 
@@ -247,7 +247,7 @@ createSyntheticEven(Interface){
         this.isPropagationStopped = false;
         return this;
     }
-    
+
     // 重写 preventDefault、stoppropagation、 persist、isPersistent
     Object.assign(SyntheticBaseEvent.prototype,{
         preventDefault:function(){
@@ -373,5 +373,5 @@ dispatchEvent(
 
 ## 参考
 
-* [React v17.0.0 合成事件系统源码解析](https://zhuanlan.zhihu.com/p/384192871)
-* [React17源码解读—— 事件系统](https://juejin.cn/post/6967738672279994382)
+- [React v17.0.0 合成事件系统源码解析](https://zhuanlan.zhihu.com/p/384192871)
+- [React17 源码解读—— 事件系统](https://juejin.cn/post/6967738672279994382)

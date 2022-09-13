@@ -27,7 +27,7 @@ var isPalindrome = function (x) {
 
   // 二：数学解法
   // 小于0的数都不是 回文数
-  // 从 x 值的 个位数开始取数， 取到的数依次向高位进位 
+  // 从 x 值的 个位数开始取数， 取到的数依次向高位进位
   // 最后将得到的值 cur  与原值 x 比较，如果相等则是回文数
   /** 123432 执行顺序
   一：cur 2 num 12343
@@ -44,10 +44,10 @@ var isPalindrome = function (x) {
   let num = x;
   while (num >= 1) {
     // 将 当前 cur 向 高位移动 加上 个位数
-    cur = cur * 10 + num % 10;
+    cur = cur * 10 + (num % 10);
     // 将 num 除以 10 取整
-    num = Math.floor(num / 10)
+    num = Math.floor(num / 10);
   }
-  // 最后 判断 从个位数开始取到的值 重新拼成 
+  // 最后 判断 从个位数开始取到的值 重新拼成
   return cur === x;
 };

@@ -41,7 +41,6 @@ var longestCommonPrefix = function (strs) {
   //   samestr = prestr;
   // }
   // return samestr;
-
   /**
   二
   纵向扫描

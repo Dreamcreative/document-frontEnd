@@ -21,7 +21,7 @@ var sortColors = function (nums) {
     if (nums[i] === 0) {
       swap(nums, L, i);
       i++;
-      L++
+      L++;
     } else if (nums[i] === 1) {
       i++;
     } else {

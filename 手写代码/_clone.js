@@ -8,7 +8,7 @@ function shallowCopy(obj) {
   let newObj = obj instanceof Array ? [] : {};
   for (let key in obj) {
     if (obj.hasOwnProperty(key)) {
-      newObj[key] = obj[key]
+      newObj[key] = obj[key];
     }
   }
   return newObj;
@@ -38,7 +38,7 @@ function deepCopy(obj) {
 }
 // 更完整的 深克隆，处理了循环引用
 /**
- * 
+ *
  * @param {object} obj 要拷贝的对象
  * @param {Map} map 用于存储循环引用对象
  */
@@ -62,7 +62,7 @@ function _deepClone(obj = {}, map = new Map()) {
   for (const key in obj) {
     // 只处理对象自身属性
     if (obj.hasOwnProperty(key)) {
-      result[key] = _deepClone(obj[key], map)
+      result[key] = _deepClone(obj[key], map);
     }
   }
   return result;

@@ -7,7 +7,7 @@
  */
 //  限制的最大值 最小值
 const max = Math.pow(2, 31) - 1;
-const min = - Math.pow(2, 31);
+const min = -Math.pow(2, 31);
 var reverse = function (x) {
   /**
    * 一
@@ -25,7 +25,6 @@ var reverse = function (x) {
   //   }
   // }
   // return result;
-
   /**
    * 二
    */
@@ -49,7 +48,7 @@ var reverse = function (x) {
   //   }
   // }
   // return Number(result);
-}
+};
 var reverseString = function (strArr) {
   const len = strArr.length;
   for (let i = 0; i < len / 2; i++) {
@@ -59,4 +58,4 @@ var reverseString = function (strArr) {
     strArr[i] = temp;
   }
   return strArr.join('');
-}
+};

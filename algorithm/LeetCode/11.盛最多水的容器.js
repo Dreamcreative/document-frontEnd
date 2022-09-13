@@ -15,17 +15,17 @@
   Math.min(height[left], height[right])*(right-left)
   使用双指针的方式，从数组两边开始遍历，left、right, 遇到小值时，小值一侧的下标向中间移动，一直移动到 left、right 相等
  */
-var maxArea = function(height) {
-    let left =0;
-    let right = height.length-1;
-    let max =0;
-    while(left !==right){
-      max=Math.max(max, Math.min(height[left], height[right])* (right-left))
-      if(height[left]<=height[right]){
-        left++
-      }else{
-        right--;
-      }
+var maxArea = function (height) {
+  let left = 0;
+  let right = height.length - 1;
+  let max = 0;
+  while (left !== right) {
+    max = Math.max(max, Math.min(height[left], height[right]) * (right - left));
+    if (height[left] <= height[right]) {
+      left++;
+    } else {
+      right--;
     }
-    return max;
+  }
+  return max;
 };

@@ -12,7 +12,7 @@ function _throttle(func, wait) {
       timer = setTimeout(() => {
         func.apply(this, arguments);
         timer = null;
-      }, wait)
+      }, wait);
     }
-  }
+  };
 }

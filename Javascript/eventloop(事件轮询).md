@@ -33,16 +33,16 @@ nodejs >= 11 表现
 |             |<-- 执行所有 Next Tick Queue 以及 MicroTask Queue 的回调
 │  ┌──────────┴────────────┐
 │  │     idle, prepare     │<————— 内部调用（可忽略）
-│  └──────────┬────────────┘     
+│  └──────────┬────────────┘
 |             |<-- 执行所有 Next Tick Queue 以及 MicroTask Queue 的回调
 |             |                   ┌───────────────┐
 │  ┌──────────┴────────────┐      │   incoming:   │ - (执行几乎所有的回调，除了 close callbacks 以及 timers 调度的回调和 setImmediate() 调度的回调，在恰当的时机将会阻塞在此阶段)
-│  │         poll          │<─────┤  connections, │ 
-│  └──────────┬────────────┘      │   data, etc.  │ 
-│             |                   |               | 
+│  │         poll          │<─────┤  connections, │
+│  └──────────┬────────────┘      │   data, etc.  │
+│             |                   |               |
 |             |                   └───────────────┘
 |             |<-- 执行所有 Next Tick Queue 以及 MicroTask Queue 的回调
-|  ┌──────────┴────────────┐      
+|  ┌──────────┴────────────┐
 │  │        check          │<————— setImmediate() 的回调将会在这个阶段执行
 │  └──────────┬────────────┘
 |             |<-- 执行所有 Next Tick Queue 以及 MicroTask Queue 的回调

@@ -45,12 +45,12 @@ var longestCommonPrefix = function (strs) {
 
   let common = strs.shift();
   for (let i = 0; i < strs.length; i++) {
-    common = samePrefix(common, strs[i])
+    common = samePrefix(common, strs[i]);
   }
   return common;
 };
 /**
- * 
+ *
  * @param {string} pre 之前元素比对后得到的公共部分
  * @param {string} str 下一个需要比对的元素
  */
@@ -59,7 +59,7 @@ function samePrefix(pre, str) {
   let common = '';
   for (let i = 0; i < pre.length; i++) {
     if (pre[i] === str[i]) {
-      common += pre[i]
+      common += pre[i];
     } else {
       return common;
     }
