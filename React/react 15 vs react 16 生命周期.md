@@ -86,7 +86,7 @@
 
 6.  componentWillUpdate(){}
 
-    1.        当shouldComponentUpdate()返回true时调用
+    1. 当 shouldComponentUpdate()返回 true 时调用
 
 7.  componentDidUpdate(){}
 
