@@ -1,0 +1,27 @@
+{
+  "name": "document-frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write \"./**/*.js\" \"./**/*.md\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dreamcreative/document-frontEnd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dreamcreative/document-frontEnd/issues"
+  },
+  "homepage": "https://github.com/Dreamcreative/document-frontEnd#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.37.0",
+    "@typescript-eslint/parser": "^5.37.0",
+    "eslint": "^8.23.1",
+    "prettier": "^2.7.1"
+  }
+}
