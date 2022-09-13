@@ -1,5 +1,7 @@
 // React 17 新增的 JSX 转换方式
 
+const { isArray } = require('core-util-is');
+
 /**
  * 生成 react 元素
  * @param {*} type 元素类型
@@ -50,7 +52,7 @@ function ReactElement(type, key, ref, self, source, owner, props) {
   return element;
 }
 /**
- *
+ * 处理 tpye config key 等属性，最终传入 ReactElement() 生成 React 元素
  * @param {*} type 节点类型
  * @param {object} config 节点配置
  * @param {*} maybeKey 节点的 key
@@ -65,6 +67,7 @@ function jsxDEV(type, config, maybeKey, source, self) {
     checkKeyStringCoercion(maybeKey);
     key = '' + maybeKey;
   }
+  // config 用于 key 属性
   if (hasValidKey(config)) {
     // 将 key 转为 字符串
     checkKeyStringCoercion(config.key);
@@ -82,7 +85,7 @@ function jsxDEV(type, config, maybeKey, source, self) {
       props[propName] = config[propName];
     }
   }
-
+  // 组件用于 defaultProps 默认属性
   if (type && type.defaultProps) {
     // 如果存在 defaultProps 默认属性时，将默认属性赋值给 props
     var defaultProps = type.defaultProps;
@@ -108,6 +111,50 @@ function jsxDEV(type, config, maybeKey, source, self) {
   // 返回一个 react 元素
   return ReactElement(type, key, ref, self, source, ReactCurrentOwner.current, props);
 }
+/**
+ *
+ * @param {ReactNode} node react 元素节点
+ * @param {*} parentType 父节点类型
+ */
+function validateChildKeys(node, parentType) {
+  // node 类型不为 object 表示为基本类型 ，直接返回
+  if (typeof node !== 'object') {
+    return;
+  }
+  if (isArray(node)) {
+    // 多节点
+    for (var i = 0; i < node.length; i++) {
+      // 遍历节点，验证每个节点是否存在唯一key
+      var child = node[i];
+      if (isValidElement) {
+        // 验证节点是否存在 key 属性
+        validateExplicitKey(child, parentType);
+      }
+    }
+  } else if (isValidElement(node)) {
+    // 是 react 元素节点
+    // 类型为 object 且不为 null,并且 $$typeof ===REACT_ELEMENT_TYPE
+    if (node._store) {
+      node._store.validated = true;
+    }
+  } else if (node) {
+    // 如果是一个 迭代器
+    var iteratorFn = getIteratorFn(node);
+    if (typeof iteratorFn === 'function') {
+      if (iteratorFn !== node.entries) {
+        var iterator = iteratorFn.call(node);
+        var step;
+        while (!(step = iterator.next()).node) {
+          if (isValidElement(step.value)) {
+            // 验证节点是否存在 key 属性
+            validateExplicitKey(step.value, parentType);
+          }
+        }
+      }
+    }
+  }
+}
+// 验证JSX
 function jsxWithValidation(type, props, key, isStaticChildren, source, self) {
   // 判断是否是一个 有效的 react 类型，返回 true/false
   var validType = isValidElementType(type); // true or false
@@ -115,19 +162,31 @@ function jsxWithValidation(type, props, key, isStaticChildren, source, self) {
     // 如果不是 react 类型，给出 错误提示
     // error info
   }
+  // 返回一个 React 元素
   var element = jsxDEV(type, props, key, source, self);
   if (element == null) {
+    // 元素为空
     return element;
   }
   if (validType) {
+    // 如果是 react 元素
+    // 获取 props 中的 children 子节点
     var children = props.children;
     if (children !== undefined) {
+      // 子节点存在
       if (isStaticChildren) {
+        // 如果是静态子节点 多节点情况
         if (Array.isArray(children)) {
+          // 子节点为多节点
+          // 遍历子节点
           for (var i = 0; i < children.length; i++) {
+            // 验证节点
+            // 多节点 每个节点都拥有 key 属性
+            // 单节点 节点拥有 key 属性
             validateChildKeys(children[i], type);
           }
           if (Object.freeze) {
+            // 冻结 子节点
             Object.freeze(children);
           }
         } else {
@@ -138,13 +197,16 @@ function jsxWithValidation(type, props, key, isStaticChildren, source, self) {
           );
         }
       } else {
+        // 当节点情况 该节点如果的子节点是 多节点/单节点 验证节点的 key 属性是否存在且唯一
         validateChildKeys(children, type);
       }
     }
   }
   if (type === REACT_FRAGMENT_TYPE) {
-    validateFragementProps(element);
+    // 如果为 空标签，验证 fragment 只能拥有 children、key、ref 这几种属性
+    validateFragmentProps(element);
   } else {
+    // 验证节点的其他属性
     validatePropTypes(element);
   }
   return element;
