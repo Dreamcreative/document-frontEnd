@@ -1,6 +1,8 @@
 // React 17 新增的 JSX 转换方式
 
-const { isArray } = require('core-util-is');
+/**
+ * 就是将 React.createElement() 相关代码单独进行了提取
+ */
 
 /**
  * 生成 react 元素
@@ -217,7 +219,9 @@ function jsxWithValidationStatic(type, props, key) {
 function jsxWithValidationDynamic(type, props, key) {
   return jsxWithValidation(type, props, key, false);
 }
+// 单节点使用
 var jsx = jsxWithValidationDynamic;
+// 多节点使用
 var jsxs = jsxWithValidationStatic;
 exports.jsx = jsx;
 exports.jsxs = jsxs;
