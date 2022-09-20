@@ -1,5 +1,54 @@
 # react-window
 
+```js
+// react-window ts 定义
+type Props<T> = {
+  // 子节点
+  children: RenderComponent<T>,
+  // 外部传入的类名
+  className?: string,
+  // 滑动方向
+  direction: Direction, //  'ltr' | 'rtl' | 'horizontal' | 'vertical'
+  // 外容器高度
+  height: number | string,
+  // 初始滑动距离
+  initialScrollOffset?: number,
+  // 内部容器实例
+  innerRef?: any,
+  // 内部容器的节点名称 默认 div
+  innerElementType?: string | React$AbstractComponent<InnerProps, any>,
+  // 内部容器的节点名称 默认 div 已启用，使用 innerElementType
+  innerTagName?: string, // deprecated
+  // 需要渲染的节点数量
+  itemCount: number,
+  // 外部传入的上下文数据，作为 react 上下文 api 的替代品
+  itemData: T,
+  // 函数 返回 节点的唯一 key,默认 index
+  itemKey?: (index: number, data: T) => any,
+  // 窗口方向上的节点大小，横向滑动时，为节点宽度;纵向滑动时，为节点高度
+  itemSize: itemSize,
+  // 列表的布局方向
+  layout: Layout, // 'horizontal' | 'vertical'
+  // 当可视区域节点变化时的回调
+  onItemsRendered?: onItemsRenderedCallback,
+  // 列表滑动时的回调
+  onScroll?: onScrollCallback,
+  // 外部容器的实例
+  outerRef?: any,
+  // 外部容器的节点名称 默认 div
+  outerElementType?: string | React$AbstractComponent<OuterProps, any>,
+  // 外部容器的节点名称 默认 div 已启用，使用 outerElementType
+  outerTagName?: string, // deprecated
+  // 多余渲染的节点个数 默认 2
+  overscanCount: number,
+  // 样式
+  style?: Object,
+  useIsScrolling: boolean,
+  // 外容器宽度
+  width: number | string
+|};
+```
+
 1. 使用 `requestAnimationFrame` 来处理节点渲染
 2. 通过判断 `performance.now()` 来获取渲染时机
 3. 在列表滚动时，根据列表的滑动方向来获取已渲染节点的起始索引和结束索引，来设置节点距离容器顶部的 offset 偏移量
