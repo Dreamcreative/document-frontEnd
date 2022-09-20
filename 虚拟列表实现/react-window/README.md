@@ -1,5 +1,40 @@
 # react-window
 
+1. 使用 `requestAnimationFrame` 来处理节点渲染
+2. 通过判断 `performance.now()` 来获取渲染时机
+3. 在列表滚动时，根据列表的滑动方向来获取已渲染节点的起始索引和结束索引，来设置节点距离容器顶部的 offset 偏移量
+4. 会将已渲染项目的样式 `style` 缓存在 hash 表中，以`节点索引作为 key`,`节点样式作为 value`
+5. `react-window` 为什么会以函数的形式渲染子节点的，使用了 React 的 `render props`设计模式
+
+```js
+import { FixedSizeList as List } from 'react-window';
+// 简单例子
+<List
+  onScroll={() => {
+    console.log('onScroll');
+  }}
+  onItemsRendered={() => {
+    console.log('onItemsRendered');
+  }}
+  overscanCount={10}
+  height={150}
+  itemCount={1000}
+  itemSize={30}
+  width={300}
+>
+  {({ index, style, data }) => {
+    // 子节点为函数
+    return (
+      <div className={index % 2 ? styles['ListItemOdd'] : styles['ListItemEven']} style={style}>
+        Row {data}
+      </div>
+    );
+  }}
+</List>;
+// 传入虚拟列表 List 的 children，通过以下方式进行处理，props 会作为 子节点的参数传入函数中
+createElement(children, { ...props });
+```
+
 ## 主要代码
 
 ```js
