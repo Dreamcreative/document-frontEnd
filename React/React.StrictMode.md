@@ -1,0 +1,58 @@
+# React.StrictMode
+
+> StrictMode 是一个用来突出显示应用程序中潜在问题的工具。与 `<Fragment>`一样，`<StrictMode>`不会渲染任何可见的 UI。只是为其后代元素触发额外的检查和警告
+
+- `注意：<StrictMode>`检查仅在开发模式下运行，不会影响生产构建
+
+* `<StrictMode>` 多次`(一般为两次)`调用以下函数来进行检测
+
+1. class 组件的 constructor、render 以及 shouldComponentUpdate 方法
+2. class 组件的生命周期方法 getDerivedStateFromProps
+3. 函数组件体
+4. 状态更新函数(setState 的第一个参数)
+5. 函数组件通过使用 useState、useMemo、或者 useReducer
+
+## `<StrictMode>` 检查范围
+
+1. 识别不安全的生命周期
+
+   1. componentWillMount
+   2. componentWillUpdate
+   3. componentWillReceiveProps
+
+2. 关于使用过时的 `ref API` 的警告
+
+> `ref API` 使用方式
+
+- `ref string`: 已被废弃 [存在的一些问题](https://github.com/facebook/react/pull/8333#issuecomment-271648615)
+
+```js
+<Input ref='inputRef' />
+```
+
+- `React.createRef()`
+
+```js
+this.inputRef = React.createRef();
+<Input ref={this.inputRef} />;
+```
+
+- `回调 ref`
+
+```js
+<Input ref={el => (this.inputRef = el)} />
+```
+
+3.  关于使用废弃的 `fineDOMNode`方法警告
+
+- `React.fineDOMNode` 可以用来查找 DOM 节点，但在`<StrictMode>` 严格模式下，不推荐这样做。并且在严格模式下弃用了该方法。
+- `React.fineDOMNode` 的使用可能打破封装性
+- 推荐使用 `ref API` 来获取节点
+
+4.  检测意外的副作用
+5.  检测过时的 `context API`
+6.  确保可复用的状态
+
+## 参考
+
+- [严格模式 v18.2.0](https://zh-hans.reactjs.org/docs/strict-mode.html#detecting-unexpected-side-effects)
