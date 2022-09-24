@@ -1,4 +1,4 @@
-// 数组转树结构
+// 数组转树结构 递归方式
 // 1 for 循环
 const arrToTreeFor = (arr, pid) => {
   function loop(pid) {
@@ -12,6 +12,21 @@ const arrToTreeFor = (arr, pid) => {
       result.push(item);
     }
     return result;
+  }
+  return loop(pid);
+};
+// 2. reduce
+const arrToTreeReduce = (arr, pid) => {
+  function loop(pid) {
+    const result = [];
+    return arr.reduce((total, item) => {
+      const { parentId, id } = item;
+      if (parentId === pid) {
+        item.children = loop(id);
+        return [...total, item];
+      }
+      return total;
+    }, result);
   }
   return loop(pid);
 };
