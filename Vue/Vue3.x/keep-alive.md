@@ -1,5 +1,29 @@
 # Vue3 缓存组件
 
+## KeepAlive 总结
+
+1. KeepAlive 具有独特的两个生命周期 activate/deactivate (组件激活/组件失活)
+
+   1. 缓存组件激活状态生命周期的执行顺序， created()/mounted/activate()
+   2. 缓存组件失活状态生命周期执行顺序，deactivate()
+
+2. KeepAlive 具有 include/exclude/max 属性，
+
+   1. include: 匹配到的组件进行缓存 (string|RegExp|(string|RegExp)[])
+   2. exclude: 匹配到的组件不进行缓存 (string|RegExp|(string|RegExp)[])
+   3. max: 最多缓存组件数，超出 max 后，会删除最早缓存的组件 (string|number)
+
+3. 失活组件缓存在哪里
+
+   1. KeepAlive 会创建一个 `div` 节点 `storageContainer`，用来存放失活的组件
+   2. 当组件激活时，会将组件从 `storageContainer` 中，移动到活动的节点中
+   3. 当组件失活时，会将组件从活动的节点中，移动到 `storageContainer` 中
+
+4. KeepAlive 是如何处理缓存组件信息
+
+   1. 通过 `Map()` 来存储缓存组件的 vnode
+   2. 通过 `Set()` 来存储缓存组件的 key
+
 ## interface
 
 ```ts
