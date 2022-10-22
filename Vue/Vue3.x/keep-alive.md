@@ -66,8 +66,50 @@ const KeepAliveImpl={
     }= sharedContext
     // 挂载 失活组件的父节点
     const storageContainer= createElement('div');
-    sharedContext.activate=(vnode, container, anchor, isSVG, optimized)=>{}
-    sharedContext.deactivate=(vnode)=>{}
+    // 缓存组件激活状态
+    sharedContext.activate=(vnode, container, anchor, isSVG, optimized)=>{
+      // ! ts 非空断言
+      const instance = vnode.component!
+      // 将当前激活组件移动到主节点容器
+      move(vnode, container, anchor, MoveType.ENTER, parentSuspense)
+      patch(
+        instance.vnode,
+        vnode,
+        container,
+        anchor,
+        instance,
+        parentSuspense,
+        isSVG,
+        vnode.slotScopeIds,
+        optimized
+      )
+      queuePostRenderEffect(()=>{
+        instance.isDeactived = false
+        if(instance.a){
+          invokeArrayFns(instance.a)
+        }
+        const vnodeHook = vnode.props && vnode.props.onVnodeMounted
+        if(vnodeHook){
+          invokeVNodeHook(vnodeHook, instance.parent, vnode)
+        }
+      }, parentSuspense)
+    }
+    // 缓存失活状态
+    sharedContext.deactivate=(vnode)=>{
+      const instance = vnode.component!
+      // 将失活组件移动到 vue 主动创建的失活容器
+      move(vnode, storageContainer, null, MoveType.LEAVE, parentSuspense)
+      queuePostRenderEffect(() => {
+        if (instance.da) {
+          invokeArrayFns(instance.da)
+        }
+        const vnodeHook = vnode.props && vnode.props.onVnodeUnmounted
+        if (vnodeHook) {
+          invokeVNodeHook(vnodeHook, instance.parent, vnode)
+        }
+        instance.isDeactivated = true
+      }, parentSuspense)
+    }
     // 卸载组件
     function umMount(vnode){
       // 重置组件的 flag 标识
