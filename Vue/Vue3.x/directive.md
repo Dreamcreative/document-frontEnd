@@ -136,3 +136,145 @@ mountElement(
   }
 }
 ```
+
+2. patchElement()：比对元素时
+
+```ts
+patchElement(
+  n1: VNode,
+  n2: VNode,
+  parentComponent: ComponentInternalInstance | null,
+  parentSuspense: SuspenseBoundary | null,
+  isSVG: boolean,
+  slotScopeIds: string[] | null,
+  optimized: boolean
+){
+  let {patchFlag, dirs}=n2;
+  if(dirs){
+    // 更新元素前，执行指令的 beforeUpdate
+    invokeDirectiveHook(n2, n1, parentComponent, 'beforeUpdate')
+  }
+  ...
+  if ((vnodeHook = newProps.onVnodeUpdated) || dirs) {
+    queuePostRenderEffect(() => {
+      // 元素更新完成后，执行指令的 update
+      dirs && invokeDirectiveHook(n2, n1, parentComponent, 'updated')
+    }, parentSuspense)
+  }
+}
+```
+
+3. unmount()：元素卸载时
+
+```ts
+unmount(
+  vnode,
+  parentComponent,
+  parentSuspense,
+  doRemove = false,
+  optimized = false
+){
+  const { dirs,shapeFlag }=vnode;
+  const shouldInvokeDirs = shapeFlag & ShapeFlags.ELEMENT && dirs
+  if(shouldInvokeDirs){
+    // 元素卸载前 执行指令的 beforeUnmount
+    invokeDirectiveHook(vnode, null, parentComponent, 'beforeUnmount')
+  }
+  ...
+  if (
+    (shouldInvokeVnodeHook &&
+      (vnodeHook = props && props.onVnodeUnmounted)) ||
+    shouldInvokeDirs
+  ) {
+    queuePostRenderEffect(() => {
+      vnodeHook && invokeVNodeHook(vnodeHook, parentComponent, vnode)
+      // 元素卸载后 执行指令的 unmounted
+      shouldInvokeDirs &&
+        invokeDirectiveHook(vnode, null, parentComponent, 'unmounted')
+    }, parentSuspense)
+  }
+}
+```
+
+## invokeDirectiveHook()：执行指令
+
+```ts
+invokeDirectiveHook({
+  // 当前元素虚拟节点
+  vnode,
+  // 上一次元素虚拟节点 只在 beforeUpdate、updated 存在
+  prevVNode,
+  // 父元素实例
+  instance,
+  // 指令生命周期名称
+  name
+}){
+  // 获取元素的指令集
+  const bindings=vnode.dirs
+  // 获取上一次虚拟节点的指令集
+  const oldBindings = prevVNode && prevVNode.dirs!
+  for(let i=0;i<bindings.length;i++){
+    // 遍历元素的每一个指令
+    const binging =bindings[i]
+    if(oldBindings){
+      binding.oldValue=oldBindings[i].value
+    }
+    let hook=binding.dir[name]
+    if(__COMPAT__ && !hook){
+      // compat 模式下 指令钩子不存在，则使用 vue2 版本的指令钩子
+      hook = mapCompatDirectiveHook(name, binding.dir, instance)
+    }
+    if(hook){
+      pauseTracking()
+      // 执行 指令钩子函数，同时处理错误
+      callWithAsyncErrorHandling(hook, instance, ErrorCodes.DIRECTIVE_HOOK,
+      [vnode.el, binding, vnode, prevVNode])
+      resetTracking()
+    }
+  }
+}
+// vue2 版本的指令钩子
+const legacyDirectiveHookMap = {
+  beforeMount: 'bind',
+  mounted: 'inserted',
+  updated: ['update', 'componentUpdated'],
+  unmounted: 'unbind'
+}
+mapCompatDirectiveHook(
+  name,
+  dir,
+  instance
+){
+  // 兼容 vue2 版本的指令钩子函数
+  const mappedName=legacyDirectiveHookMap[name]
+  if(mappedName){
+    // vue3 updated 对应 vue2 的 update/componentUpdated
+    if(isArray(mappedName)){
+      const hook = []
+      mappedName.forEach(mapped=>{
+        const mappedHook=dir[mapped]
+        if(mappedHook){
+          softAssertCompatEnabled(
+            DeprecationTypes.CUSTOM_DIR,
+            instance,
+            mapped,
+            name
+          )
+          hook.push(mappedHook)
+        }
+      })
+      return hook.length ? hook : undefined
+    }
+  }else{
+    if(dir(mappedName)){
+      softAssertCompatEnabled(
+        DeprecationTypes.CUSTOM_DIR,
+        instance,
+        mappedName,
+        name
+      )
+    }
+    return dir[mappedName]
+  }
+}
+```
