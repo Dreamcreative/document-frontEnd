@@ -1,6 +1,6 @@
 # webbpack 热更新
 
-## react 项目配置 hrm
+## react 项目配置 hmr
 
 ```js
 // 1. webpack.config.json
@@ -27,4 +27,4 @@ if (_module.hot) {
 ReactDOM.createRoot(root).render(<App />)
 ```
 
-## webpack hrm 实现原理
+## webpack hmr 实现原理
