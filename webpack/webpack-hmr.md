@@ -47,7 +47,26 @@ ReactDOM.createRoot(root).render(<App />)
   1. 监听文件，文件夹变化，
 
 - HotModuleReplacement
+
   1. HMR 的中枢，接收传递给他的 hash 值，通过`JsonpMainTemplate.runtime`向服务器发送 ajax、jsonp 请求，分别请求更新的文件列表、最新的代码模块，返回给 HMR runtime,进行模块热更新
+
+- chokidar(webpack-dev-server 中使用)
+
+`支持 node 版本 8+`
+
+1. 最小高效的文件监听库
+2. `fs.watch()`监听文件变化
+
+```js
+function createFsWatchInstance(path, options, listener, errHandle, emitRaw) {
+  const handleEvent = (rawEvent, evpath) => {};
+  try {
+    return fs.watch(path, options, handleEvent);
+  } catch (error) {
+    errHandle(error);
+  }
+}
+```
 
 1. `webpack-dev-middleware`中间件，通过 `webpack` 暴露的 api 来监听文件的变化，当文件变化时，`webpack` 重新打包，并告知 webpack 将打包后的文件放到内存中使用`memory-fs`
 
