@@ -56,6 +56,7 @@ ReactDOM.createRoot(root).render(<App />)
 
 1. 最小高效的文件监听库
 2. `fs.watch()`监听文件变化
+3. `fs.watchFile()`监听文件夹变化
 
 ```js
 function createFsWatchInstance(path, options, listener, errHandle, emitRaw) {
