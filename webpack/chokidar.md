@@ -50,10 +50,52 @@ class FSWatcher extends EventEmitter {
     }
   }
   /**
+   * 根据当前环境选择对应的 监听方式 监听路径 fsEvents-handler/nodejs-handler
    * paths_ 需要监听的文件路径
    * _origAdd 用于处理不存在的路径监听
    * _internal 表示非用户添加
    */
-  add(paths_, _origAdd, _internal) {}
+  add(paths_, _origAdd, _internal) {
+    const { cwd, disableGlobbing } = this.options;
+    this.closed = false;
+    let paths = unifyPaths(paths_);
+    if (cwd) {
+      paths = paths.map(path => {
+        // 获取绝对路径
+        const absPath = getAbsolutePath(path, cwd);
+        // 标准化路径
+        return normalizePath(absPath);
+      });
+    }
+    paths = paths.filter(path => {
+      // 过滤 glob
+      if (path.startsWith('!')) {
+        this._ignoredPaths.add(path.slice(1));
+        return false;
+      }
+      return true;
+    });
+    // 判断使用 fsEventsHandler 还是 nodeFsHandler
+    if (useFsEvents && this._fsEventsHandler) {
+      // 使用 fsevents 处理路径
+      paths.forEach(path => this._fsEventsHandler._addToFsEvents(path));
+    } else {
+      // 使用 Promise.all() 处理 paths 后
+      Promise.all(async path => {
+        let res = this._nodeFsHandler._addToNodeFs(path, !_internal, 0, 0, _origAdd);
+        if (res) this._emitReady();
+        return res;
+      }).then(result => {
+        if (this.closed) return;
+        // 递归处理 路径
+        result
+          .filter(item => item)
+          .forEach(item => {
+            this.add(sysPath.dirname(item), sysPath.basename(_origAdd || item));
+          });
+      });
+    }
+    return this;
+  }
 }
 ```
