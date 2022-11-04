@@ -58,6 +58,8 @@ ReactDOM.createRoot(root).render(<App />)
 2. `fs.watch()`监听文件变化
 3. `fs.watchFile()`监听文件夹变化
 
+- [chokidar](chokidar.md)
+
 ```js
 function createFsWatchInstance(path, options, listener, errHandle, emitRaw) {
   const handleEvent = (rawEvent, evpath) => {};
