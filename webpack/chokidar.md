@@ -80,8 +80,10 @@ class FSWatcher extends EventEmitter {
       // 使用 _fsEventsHandler._addToFsEvents 为文件添加 watch 事件，使用 readdirp 库处理文件夹
       paths.forEach(path => this._fsEventsHandler._addToFsEvents(path));
     } else {
-      // 使用 Promise.all() 处理 paths 后
+      // nodejs-handler 递归监听方式
       Promise.all(async path => {
+        // 为 文件添加 watcher，
+        // 如果是文件夹，则递归遍历文件夹 在 Promise.all().then() 获取内部的文件，为文件添加 watch
         let res = this._nodeFsHandler._addToNodeFs(path, !_internal, 0, 0, _origAdd);
         if (res) this._emitReady();
         return res;
@@ -135,7 +137,7 @@ class FsEventsHandler{
   // ...
   async _addToFsEvents(path, transform, forceAdd, priorDepth){
     try{
-      // 读取出入的 文件/文件夹 路径，为文件遍历添加 watcher
+      // 读取传入的 文件/文件夹 路径，为文件遍历添加 watcher
       this.fsw._readdirp(wh.watchPath,{
         fileFilter: entry=> wh.filterPath(entry),
         directoryFilter: entry => wh.filterDir(entry),
@@ -148,5 +150,57 @@ class FsEventsHandler{
     }
   }
   // ...
+}
+```
+
+- nodejs-handler
+
+```js
+// 使用 fs.watchFile() 监听文件夹
+const setFsWatchFileListener = (path, fullPath, options, handlers) => {
+  let cont = {
+    listeners: listener,
+    rawEmitters: rawEmitter,
+    options,
+    watcher: fs.watchFile(fullPath, options, (curr, prev) => {
+      foreach(cont.rawEmitters, rawEmitter => {
+        rawEmitter(EV_CHANGE, fullPath, { curr, prev });
+      });
+      const currmtime = curr.mtimeMs;
+      if (curr.size !== prev.size || currmtime > prev.mtimeMs || currmtime === 0) {
+        foreach(cont.listeners, listener => listener(path, curr));
+      }
+    })
+  };
+  return () => {};
+};
+// 使用 fs.watch 监听文件
+const setFsWatchListener = (path, fullPath, options, handlers) => {
+  try {
+    return fs.watch(path, options, handleEvent);
+  } catch (error) {
+    errHandler(error);
+  }
+};
+class NodeFsHandler {
+  // 使用 node fs 监听文件
+  _watchWithNodeFs(path, listener) {
+    let closer;
+    if (opts.usePolling) {
+      // 监听文件夹
+      closer = setFsWatchFileListener(path, absolutePath, options, {
+        listener,
+        rawEmitter: this.fsw._emitRaw
+      });
+    } else {
+      // 监听文件
+      closer = setFsWatchListener(path, absolutePath, options, {
+        listener,
+        errHandler: this._boundHandleError,
+        rawEmitter: this.fsw._emitRaw
+      });
+    }
+    return closer;
+  }
 }
 ```
