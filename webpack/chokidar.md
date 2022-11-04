@@ -77,7 +77,7 @@ class FSWatcher extends EventEmitter {
     });
     // 判断使用 fsEventsHandler 还是 nodeFsHandler
     if (useFsEvents && this._fsEventsHandler) {
-      // 使用 fsevents 处理路径
+      // 使用 _fsEventsHandler._addToFsEvents 为文件添加 watch 事件，使用 readdirp 库处理文件夹
       paths.forEach(path => this._fsEventsHandler._addToFsEvents(path));
     } else {
       // 使用 Promise.all() 处理 paths 后
@@ -97,5 +97,56 @@ class FSWatcher extends EventEmitter {
     }
     return this;
   }
+}
+```
+
+- fsEvents-handler 递归监听方式
+
+```js
+// 入口方法
+class FSWatcher extends EventEmitter {
+  add(paths_){
+    // ...
+    paths.forEach(path=> this._fsEventsHandler._addToFsEvents(path))
+    // ...
+  }
+}
+
+this.fsw._readdirp = _readdirp(root, opts) {
+  if (this.closed) return;
+  const options = { type: 'all', alwaysStat: true, lstat: true, ...opts };
+  let stream = readdirp(root, options);
+  this._streams.add(stream);
+  stream.once('close', () => {
+    stream = undefined;
+  });
+  stream.once('end', () => {
+    if (stream) {
+      this._streams.delete(stream);
+      stream = undefined;
+    }
+  });
+  return stream;
+}
+
+// FsEventsHandler
+
+class FsEventsHandler{
+  // ...
+  async _addToFsEvents(path, transform, forceAdd, priorDepth){
+    try{
+      // 读取出入的 文件/文件夹 路径，为文件遍历添加 watcher
+      this.fsw._readdirp(wh.watchPath,{
+        fileFilter: entry=> wh.filterPath(entry),
+        directoryFilter: entry => wh.filterDir(entry),
+        ...Depth(opts.depth - (priorDepth || 0))
+      }).on('data', entry=>{
+        // ...
+        this.emitAdd(joinedPath, entry.stats, processPath, opts, forceAdd);
+        // ...
+      })
+    }
+  }
+  // ...
 }
 ```
