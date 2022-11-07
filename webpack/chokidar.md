@@ -30,6 +30,7 @@ chokidar 的解释
 3. `fsevents-handler` 自制的文件资源监听，没有使用 nodejs 的 fs 接口
 
 ```js
+// index
 const watch = (paths, options) => {
   const watchs = new FSWatcher(options);
   watchs.add(paths);
@@ -104,6 +105,9 @@ class FSWatcher extends EventEmitter {
 
 - fsEvents-handler 递归监听方式
 
+1. [readdirp](https://github.com/paulmillr/readdirp): `fs.readdir` 递归版本
+2. [fsevents](https://github.com/fsevents/fsevents): MacOS 中应用程序监听目录树的更改通知
+
 ```js
 // 入口方法
 class FSWatcher extends EventEmitter {
@@ -113,7 +117,7 @@ class FSWatcher extends EventEmitter {
     // ...
   }
 }
-
+// 使用 readdirp 库，递归读取 文件
 this.fsw._readdirp = _readdirp(root, opts) {
   if (this.closed) return;
   const options = { type: 'all', alwaysStat: true, lstat: true, ...opts };
@@ -130,7 +134,11 @@ this.fsw._readdirp = _readdirp(root, opts) {
   });
   return stream;
 }
-
+// 创建 FsEvent 实例，使用 fsevents 库
+const createFSEventsInstance=(path, callback)=>{
+  const stop = fsevents.watch(path,callback)
+  return {stop}
+}
 // FsEventsHandler
 
 class FsEventsHandler{
