@@ -6,6 +6,7 @@
 // 1. webpack.config.json
 const webpack = require('webpack');
 module.exports = {
+  mode:'development',
   devServer: {
     host: 'localhost',
     hot: true,
@@ -41,10 +42,6 @@ ReactDOM.createRoot(root).render(<App />)
   1. 本地文件的监听，启动 webpack 编译，使用监听模式开始 webpack `watch`模式。文件系统中某一个文件发生修改，webpack 监听到文件变化，根据配置对模块重新编译打包
   2. 设置文件系统为`内存文件系统`,编译输出到内存中
   3. 实现了一个 express 中间件，将编译文件返回
-
-- watchpack
-
-  1. 监听文件，文件夹变化，
 
 - HotModuleReplacement
 
