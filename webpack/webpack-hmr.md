@@ -43,19 +43,17 @@ ReactDOM.createRoot(root).render(<App />)
   2. 设置文件系统为`内存文件系统`,编译输出到内存中
   3. 实现了一个 express 中间件，将编译文件返回
 
-- HotModuleReplacement
+- [HotModuleReplacement](./HotModuleReplacementPlugin.md)
 
   1. HMR 的中枢，接收传递给他的 hash 值，通过`JsonpMainTemplate.runtime`向服务器发送 ajax、jsonp 请求，分别请求更新的文件列表、最新的代码模块，返回给 HMR runtime,进行模块热更新
 
-- chokidar(webpack-dev-server 中使用)
+- [chokidar](chokidar.md)(webpack-dev-server 中使用)
 
 `支持 node 版本 8+`
 
 1. 最小高效的文件监听库
 2. `fs.watch()`监听文件变化
 3. `fs.watchFile()`监听文件夹变化
-
-- [chokidar](chokidar.md)
 
 ```js
 function createFsWatchInstance(path, options, listener, errHandle, emitRaw) {
