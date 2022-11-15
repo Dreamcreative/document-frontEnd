@@ -83,7 +83,15 @@ Class App extends React.Component{
    2. useLayoutEffect 和 useEffect 在 react 中执行时会被打上不同的 effectTag，导致，useLayoutEffect、useEffect 在 react 的 Renderer 阶段执行时机不同
    3. useLayoutEffect 用来代替 类组件中 componentWillMount /componentWillUpdate 因为 useLayoutEffect 的创建函数的调用时机与 这 2 个生命周期相同，切都是同步调用。useLayoutEffect 还用来代替 componentWillUnmount 因为 useLayoutEffect 的销毁函数与 这个生命周期的调用时机相同
 
-8. useCallback(callback,deps) 和 useMemo(callback,deps) 有什么区别
+8. hooks 下的 useEffect 和 classComponent 下的生命周期对应关系
+
+   > useEffect(callback, deps) 是在组件挂载只会异步执行的，可以根据 useEffect 的 deps 是否存在来模拟 classComponent 的生命周期
+
+   1. useEffect(callback,[]): 相当于 componentDidMount，当 `deps 为 []` 时，只在组件挂载完成后，执行一次
+   2. useEffect(callback): 相当于 componentDidUpdate，当 deps 不存在时，每次更新都会执行
+   3. `useEffect(()=>{ return ()=>{ console.log() }},[a,b])`: 当 useEffect 返回一个 cleanup 函数时，相当于 componentWillUnmount
+
+9. useCallback(callback,deps) 和 useMemo(callback,deps) 有什么区别
 
    1. 都是用来缓存值的
    2. useCallback 用来缓存函数，，useCallback 在 mount 阶段，将 callback 直接进行存储，在 update 阶段当 deps 变化后,会再次将 callback 返回
@@ -174,6 +182,7 @@ updateMemo(nextCreate, deps){
 
     1. 在 合成事件中 setState 是异步的 ，合成事件中 ，逻辑的执行受到 react 控制
     2. 原生事件中， setState 是同步的，原生事件中，逻辑执行不受 react 控制，例如 setTimeout 等定时器，el.addEventListener()
+    3. 在 legacy 模式下，setState 同步异步都有，在 concurrent 模式下是异步的
 
 14. setState 和 useState 的区别
 
