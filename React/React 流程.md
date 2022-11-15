@@ -140,6 +140,8 @@
 
 ## commitRoot(root) root: fiberRootNode-页面的根节点，只有一个(#app)，rootFiber 组件的根节点
 
+> fiberRootNode-页面的根节点: 这是不准确的，准确的说应该是，`#app` 容器的父级。因为 react 在创建 `#app` 元素的 fiber 节前，会先创建一个对象， 用来包裹 `#app` 元素的 fiber 节点
+
 - commit 阶段入口 分为三个子阶段
 
   1.  `before mutation阶段`(执行 DOM 操作之前)
