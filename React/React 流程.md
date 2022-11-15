@@ -148,7 +148,7 @@
 
       1. 处理 blur/focus DOM 节点
       2. 遍历 effectList (`commitBeforeMutationEffects()`)
-      3. 调用 commitBeforeMutationEffects (`调用 生命周期函数 getSnapshotBeforeUpdate 钩子`)
+      3. 调用 commitBeforeMutationEffects (`ClassComponent 调用 生命周期函数 getSnapshotBeforeUpdate 钩子`)
       4. 在浏览器完成布局与绘制之后`异步调度` useEffect （只是调度起来，并不是真正的执行，真正的执行是在 `Renderer-Layout 阶段`）
          - 为什么异步调度
            1. useEffect 如果同步调用，阻塞浏览器的行为，导致各种问题
