@@ -25,40 +25,40 @@
    3. 合成事件的执行顺序， react 使用事件代理的方式将组件事件代理在 `document React17之前`/`container React17 之后，`，当 react 事件被调用后，会向父节点冒泡，如果自身节点和父节点绑定了原生事件，会执行原生事件，，一直冒泡到根节点。再执行 react 事件
 
 ```js
-Class App extends React.Component{
-  parentRef:null;
-  childRef:null;
-  constructor(props){
+class App extends React.Component {
+  parentRef = null;
+  childRef = null;
+  constructor(props) {
     super(props);
     this.parentRef = React.createRef();
     this.childRef = React.createRef();
   }
-  componentDidMount(){
-    console.log("React componentDidMount！");
-    this.parentRef.current?.addEventListener("click", () => {
-      console.log("原生事件：父元素 DOM 事件监听！");
+  componentDidMount() {
+    console.log('React componentDidMount！');
+    this.parentRef.current?.addEventListener('click', () => {
+      console.log('原生事件：父元素 DOM 事件监听！');
     });
-    this.childRef.current?.addEventListener("click", () => {
-      console.log("原生事件：子元素 DOM 事件监听！");
+    this.childRef.current?.addEventListener('click', () => {
+      console.log('原生事件：子元素 DOM 事件监听！');
     });
-    document.addEventListener("click", (e) => {
-      console.log("原生事件：document DOM 事件监听！");
+    document.addEventListener('click', e => {
+      console.log('原生事件：document DOM 事件监听！');
     });
   }
-  parentClickFn(){
-    console.log("React 事件：父元素事件监听！");
+  parentClickFn() {
+    console.log('React 事件：父元素事件监听！');
   }
-  childClickFn(){
-    console.log("React 事件：子元素事件监听！");
+  childClickFn() {
+    console.log('React 事件：子元素事件监听！');
   }
-  render(){
+  render() {
     return (
-      <div ref={this.parentRef} onClick={this.parentClickFun}>
-        <div ref={this.childRef} onClick={this.childClickFun}>
+      <div ref={this.parentRef} onClick={() => this.parentClickFun()}>
+        <div ref={this.childRef} onClick={() => this.childClickFun()}>
           分析事件执行顺序
         </div>
       </div>
-    )
+    );
   }
 }
 
