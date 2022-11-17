@@ -73,7 +73,7 @@ class App extends React.Component {
 
 6. react16 的合成事件与 react17 的 合成事件有什么区别
 
-   1. 16 事件代理在 document 节点，使用了事件池的概念，当事件被调用时，从事件池中取出一个事件对象，当事件执行完成之后，再将事件对象返还给事件池。这样做的好处是，减少了事件对象的创建和释放，减少了所需的内存。但是同时也导致一个问题，当事件调用后，无法再次访问事件。但是可以通过手动调用`e.persist()`来缓存事件，一边事件的再次使用
+   1. 16 事件代理在 document 节点，使用了事件池的概念，当事件被调用时，从事件池中取出一个事件对象，当事件执行完成之后，再将事件对象返还给事件池。这样做的好处是，减少了事件对象的创建和释放，减少了所需的内存。但是同时也导致一个问题，当事件调用后，无法再次访问事件。但是可以通过手动调用`e.persist()`来缓存事件，以便事件的再次使用
    2. 17 事件代理在 Container 节点。取消了事件池的概念，解决了事件调用后，无法再次访问到的问题
    3. 17 中支持了原生捕获事件的支持，对齐了浏览器标准。同时`onScroll`事件不再进行冒泡，`onBlur/onFocus`，使用原生的 `foucein/foucsout`合成
 
@@ -218,8 +218,12 @@ updateMemo(nextCreate, deps){
 
 20. react dom diff 是怎么样的。react DOM diff 与 vue DOM diff 对比
 
-    1. react DOM DIFF：通过两次遍历来实现 ， 第一次遍历，遍历新节点，依次对比旧节点，判断 标签和 key 是否相等，相等则复用旧节点，继续下一个新节点和 下一个旧节点的 兄弟节点遍历。不等则直接退出第一次遍历。第一次遍历完会出现 4. 种情况，1. 新旧节点都遍历完，2. 新节点还有剩余，表示有新增节点，为剩余节点打上 Placement 新增 effectTag。3. 旧节点有剩余，表示删除了节点，未剩余旧节点打上 Deletion EffectTag，表示删除。4. 新旧节点都没有遍历完，表示节点的位置移动了，继续第二次遍历
-    2. 第二次遍历：将旧节点生成一个 Map 对象，以旧节点的 key 或者 index 作为 map 的 key,旧节点作为 map 的 value。遍历剩余新节点，通过新节点的 key 或者 index，从 map 对象中查找，是否有可复用的旧节点，，如果查找到旧节点，则判断旧节点的 标签名，是否相同，相同则复用，不同则根据新节点，重新创建一个 fiber 节点，并打上 Placement effectTag。
+    1. react DOM DIFF：通过两次遍历来实现 ， 第一次遍历，遍历新节点，依次对比旧节点，判断 标签和 key 是否相等，相等则复用旧节点，继续下一个新节点和 下一个旧节点的 兄弟节点遍历。不等则直接退出第一次遍历。第一次遍历完会出现。 具有以下 4 种情况，
+       1. 新旧节点都遍历完，
+       2. 新节点还有剩余，表示有新增节点，为剩余节点打上 Placement 新增 effectTag。
+       3. 旧节点有剩余，表示删除了节点，为剩余旧节点打上 Deletion EffectTag，表示删除。
+       4. 新旧节点都没有遍历完，表示节点的位置移动了，继续第二次遍历
+    2. 第二次遍历：将旧节点生成一个 Map 对象，以旧节点的 key 或者 index 作为 map 的 key,旧节点作为 map 的 value。遍历剩余新节点，通过新节点的 key 或者 index，从 map 对象中查找，是否有可复用的旧节点，如果查找到旧节点，则判断旧节点的 `标签名`，是否相同，相同则复用，不同则根据新节点，重新创建一个 fiber 节点，并打上 Placement effectTag。
     3. 为什么两次遍历，因为 React 团队调研发现，节点的更新操作相对于节点的移动频率会高。第一轮遍历是为了处理节点的更新，第二轮遍历，是判断节点的移动。会使用一个 lastPlacedIndex 变量来存储节点移动前的索引。
 
 21. hooks 中，第二个参数是一个依赖，react 是怎么判断依赖是否改变
@@ -230,7 +234,7 @@ updateMemo(nextCreate, deps){
 
     1. useState 和 useReducer 在 update 阶段，都是调用同样的方法 `updateReducer(basicStateReducer, initialState)`。 useState 会在 updateReducer 默认传入一个 basicStateReducer,而 useReducer 的 basicStateReducer 是由用户手动传入的。
 
-23. useReducer 使用来干什么的，有几个参数，当 useReducer 拥有第三个参数时，内部是怎么处理的，为什么这么处理
+23. useReducer 是用来干什么的，有几个参数，当 useReducer 拥有第三个参数时，内部是怎么处理的，为什么这么处理
 
     1. useReducer 相当于 redux 中的 reducer,用来处理对象。
     2. useReducer( reducer, initialState, init)，当存在第三个参数 init 时，第二个参数会作为 init 的参数传入
@@ -267,6 +271,8 @@ mountReducer(reducer, initialArg, init){
     1. 通过 state,来实现
 
 26. react 新增了 fiber， fiber 用来解决什么问题
+    1.  react fiber 之前，在进行渲染时，是递归渲染，当 DOM 结构复杂，层级较深时，会比较耗时，导致 js 线程长时间得不到释放，出现掉帧的情况。
+    2.  react fiber 之后，react 有了 `增量渲染`、`任务优先级`、`暂停渲染` 等概念。fiber 其实是一种数据结构，拥有 `return`、`child`、`sibling` 等属性。通过这些属性，react 在渲染时。可以根据`任务优先级`来决定哪些任务优先执行，可以根据`当前帧的剩余时间是否充足`来决定是否暂停渲染任务，而等到浏览器任务执行完毕后，继续执行之前暂停的任务
 27. fiber 流程
 28. react 添加了 fiber 后，为什么把 componentWillxxxx 这些生命周期标记为 UNSAFE\_
 
