@@ -31,11 +31,13 @@
 
 - 接收到 Scheduler 的任务后，每次循环都会先判断当前是否还有剩余时间
 
-  function workLoopConcurrent(){
-  while( workInProgress!==null && !shouldYield()){
-  workInProgress = performUnitOfWork(workInProgress)
+```js
+function workLoopConcurrent() {
+  while (workInProgress !== null && !shouldYield()) {
+    workInProgress = performUnitOfWork(workInProgress);
   }
-  }
+}
+```
 
 - reconciler 为变化的虚拟 DOM 打上代表 增/删/更新的 effectTag 标记
 - 当 当前组件都完成 Reconciler 的工作，会统一交给 Renderer
@@ -45,22 +47,26 @@
 - 同步任务入口
 - 调用
 
-  function workLoopSync(){
-  while(workInProgress!==null){
-  performUnitOfWork(workInProgress)
+```js
+function workLoopSync() {
+  while (workInProgress !== null) {
+    performUnitOfWork(workInProgress);
   }
-  }
+}
+```
 
 ## performConcurrentWorkOnRoot
 
 - 异步任务入口
 - 调用
 
-  function workLoopConcurrent(){
-  while(workInProgress!==null && !shouldYield()){
-  performUnitOfWork(workInProgress)
+```js
+function workLoopConcurrent() {
+  while (workInProgress !== null && !shouldYield()) {
+    performUnitOfWork(workInProgress);
   }
-  }
+}
+```
 
 ## performUnitOfWork
 
