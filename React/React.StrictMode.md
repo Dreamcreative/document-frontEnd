@@ -43,10 +43,10 @@ this.inputRef = React.createRef();
 <Input ref={el => (this.inputRef = el)} />
 ```
 
-3.  关于使用废弃的 `fineDOMNode`方法警告
+3.  关于使用废弃的 `findDOMNode`方法警告
 
-- `React.fineDOMNode` 可以用来查找 DOM 节点，但在`<StrictMode>` 严格模式下，不推荐这样做。并且在严格模式下弃用了该方法。
-- `React.fineDOMNode` 的使用可能打破封装性
+- `React.findDOMNode` 可以用来查找 DOM 节点，但在`<StrictMode>` 严格模式下，不推荐这样做。并且在严格模式下弃用了该方法。
+- `React.findDOMNode` 的使用可能打破封装性
 - 推荐使用 `ref API` 来获取节点
 
 4.  检测意外的副作用
