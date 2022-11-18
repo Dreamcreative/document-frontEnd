@@ -233,7 +233,7 @@ function getDisplayName(WrappedComponent) {
 
 2. 务必复制静态方法
 
-   - 被 hoc 的容器组件包裹后，无法继承原组件本身的`静态方法/静态属性`,所以需要得 hoc 返回的组件做一些特殊处理，以便返回的组件具有原组件本身的`静态属性`
+   - 被 hoc 的容器组件包裹后，无法继承原组件本身的`静态方法/静态属性`,所以需要对 hoc 返回的组件做一些特殊处理，以便返回的组件具有原组件本身的`静态属性`
 
 ```js
 import hoistNonReactStatic from 'hoist-non-react-statics';
