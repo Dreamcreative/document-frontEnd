@@ -26,6 +26,17 @@
 
 - `ref string`: 已被废弃 [存在的一些问题](https://github.com/facebook/react/pull/8333#issuecomment-271648615)
 
+1. 查找效率低
+   1. 字符串 ref 需要 React 维护一个 refs 注册表
+   2. 每次更新都需要遍历查找，性能开销大
+   3. 无法进行编译优化
+2. 内存占用
+3. 无法进行静态分析
+   1. 字符串 ref 难以进行代码检查
+   2. 重构工具无法可靠的重命名
+   3. TypeScript 类型检查受限
+4. 可能得命名冲突
+
 ```js
 <Input ref='inputRef' />
 ```
@@ -43,7 +54,7 @@ this.inputRef = React.createRef();
 <Input ref={el => (this.inputRef = el)} />
 ```
 
-3.  关于使用废弃的 `findDOMNode`方法警告
+1.  关于使用废弃的 `findDOMNode`方法警告
 
 - `React.findDOMNode` 可以用来查找 DOM 节点，但在`<StrictMode>` 严格模式下，不推荐这样做。并且在严格模式下弃用了该方法。
 - `React.findDOMNode` 的使用可能打破封装性
