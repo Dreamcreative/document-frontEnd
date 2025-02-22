@@ -2,6 +2,11 @@
 
 useActionState 可以根据某个表单动作的结果更新 state 的 hook
 
+## useActionState(action, initialState, permalink?)
+
+1. action: reducer 函数
+2. initialState: 初始值
+
 ## 挂载阶段
 
 ```ts
