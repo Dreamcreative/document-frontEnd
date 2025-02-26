@@ -4,7 +4,7 @@
 
 > 纯组件，会浅比较 state 和 props，来控制节点的渲染。与 `React.Component`的区别在与，纯组件新增了一个 `shouldComponentUpdate()` 周期判断 state/props 是否有变化
 
-## React.memo(Component, props)
+## React.memo(Component, compare(){})
 
 > `React.PureComponent`类似，会浅比较 props,只有当 props 变化时，才会重新渲染 Component
 

@@ -10,7 +10,7 @@
 
 3. react 为什么新增 hooks ,解决了什么问题
 
-   1. 逻辑复用：在 hooks 出现之前，react 可以使用 react.CreateContent(),HOC， renderProps 模式，但是这些方法都需要改变组件的结构。而 react 没有原生方法来实现逻辑复用。添加 hooks 之后，在不需要改变组件结构的情况下，将逻辑拆分成一个个小的纯函数，便于逻辑复用
+   1. 逻辑复用：在 hooks 出现之前，react 可以使用 react.CreateContext(),HOC， renderProps 模式，但是这些方法都需要改变组件的结构。而 react 没有原生方法来实现逻辑复用。添加 hooks 之后，在不需要改变组件结构的情况下，将逻辑拆分成一个个小的纯函数，便于逻辑复用
    2. 解决复杂组件难以理解的问题：类组件，使用生命周期的方式使得，组件在什么情况下做什么事情，比如，一般在 componentDidMount,去调用接口，获取数据，但是同时也可能会添加一些事件绑定，这样使得各种不相关的逻辑代码混合在一起。可能导致意想不到的 bug 出现。而 hooks,使用函数将逻辑进行分离，而不是通过生命周期的方式进行归类，使得内部状态变得可预测
    3. 难以理解的 Class：使用类组件，就必须去理解 JavaScript 中 this 的指向问题，使得代码冗余。同时 class 也给目前的一些工具带来一些问题，1. class 不能被很好的压缩，2. class 在热更新时不是很稳定。而 hooks 是你在不使用 class 的情况可以使用更多的 react 特性。
 
@@ -81,7 +81,7 @@ class App extends React.Component {
 
    1. useLayoutEffect 在 DOM 挂载之前同步执行，会阻塞 DOM 渲染。而 useEffect 在节点挂载完成后，异步调用，不会阻塞 DOM 渲染
    2. useLayoutEffect 和 useEffect 在 react 中执行时会被打上不同的 effectTag，导致，useLayoutEffect、useEffect 在 react 的 Renderer 阶段执行时机不同
-   3. useLayoutEffect 用来代替 类组件中 componentWillMount /componentWillUpdate 因为 useLayoutEffect 的创建函数的调用时机与 这 2 个生命周期相同，切都是同步调用。useLayoutEffect 还用来代替 componentWillUnmount 因为 useLayoutEffect 的销毁函数与 这个生命周期的调用时机相同
+   3. useLayoutEffect 用来代替 类组件中 componentWillMount /componentWillUpdate 因为 useLayoutEffect 的创建函数的调用时机与 这 2 个生命周期相同，且都是同步调用。useLayoutEffect 还用来代替 componentWillUnmount 因为 useLayoutEffect 的销毁函数与 这个生命周期的调用时机相同
 
 8. hooks 下的 useEffect 和 classComponent 下的生命周期对应关系
 
@@ -169,7 +169,7 @@ updateMemo(nextCreate, deps){
     1. forEach：遍历子节点
     2. map：遍历子节点
     3. count ：返回子节点数量
-    4. only：验证只有一个子节点
+    4. only：判断 children 是不是一个 React 元素
     5. toArray：将子节点扁平化返回
 
 12. react 开发模式有哪几种，分别有什么区别
@@ -277,7 +277,7 @@ mountReducer(reducer, initialArg, init){
 28. react 添加了 fiber 后，为什么把 componentWillxxxx 这些生命周期标记为 UNSAFE\_
 
     1. 因为 react15（fiber）之前的架构是 Reconciler 和 renderer 两层，Reconciler 对 DOM 进行 DOM Diff（同步递归），diff 完成之后，进入 Renderer 阶段，对 DOM 进行渲染
-    2. react16 (fiber)之后架构是 Scheduler/Reconciler/Renderer 三次，Scheduler 会对任务进行优先级判断，优先级高的任务优先进入 Reconciler。优先级低的任务，后进入 Reconciler。Reconciler 对 DOM 进行 DOM Diff ，找出变化的节点，并为节点打上 EffectTag 标记。Reconciler 之后是 Renderer 阶段，会对打上 EffectTag 标记的节点，进行相应的增删改操作。
+    2. react16 (fiber)之后架构是 Scheduler/Reconciler/Renderer 三层，Scheduler 会对任务进行优先级判断，优先级高的任务优先进入 Reconciler。优先级低的任务，后进入 Reconciler。Reconciler 对 DOM 进行 DOM Diff ，找出变化的节点，并为节点打上 EffectTag 标记。Reconciler 之后是 Renderer 阶段，会对打上 EffectTag 标记的节点，进行相应的增删改操作。
     3. fiber 之前，react 处理任务，是递归执行，期间无法被打断，如果任务执行时间过长，会导致页面长时间无效应，影响用户交互。fiber 之后，react 将 react15 的 Reconciler 阶段拆分成了两个阶段，一个 Scheduler、一个 Reconciler。Scheduler 通过判断任务的优先级，优先级高的任务先进入 Reconciler，优先级低的后进入 Reconciler。这样就导致了任务可能会被打断，使得 componentWillxxxx 这些生命周期可能会重复执行。所以给 componentWillxxxx 加上了 UNSAFE\_
 
 29. react 组件是怎么处理错误的
