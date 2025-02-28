@@ -4,7 +4,7 @@
 
 ## 优势
 
-1. CPU 节能：如果使用 `setInterval`实现动画，当页面被隐藏或最小化时，`setInterval`仍然在后台执行动画任务，由于此时页面是不可见状态，刷新动画没有意义，完全是浪费 CPU 资源。而 requestAnimtionFrame 则完全不同，当页面处于未激活状态时，该页面的屏幕刷新任务会被系统暂停，因此 requestAnimationFrame 的渲染也会被停止，当页面重新被激活时，动画会从上次停留的地方继续执行，有效的节省了 CPU 开销。
+1. CPU 节能：如果使用 `setInterval`实现动画，当页面被隐藏或最小化时，`setInterval`仍然在后台执行动画任务，由于此时页面是不可见状态，刷新动画没有意义，完全是浪费 CPU 资源。而 requestAnimationFrame 则完全不同，当页面处于未激活状态时，该页面的屏幕刷新任务会被系统暂停，因此 requestAnimationFrame 的渲染也会被停止，当页面重新被激活时，动画会从上次停留的地方继续执行，有效的节省了 CPU 开销。
 
 2. 函数节流：在高频率事件（resize, scroll 等）中，为了防止在一个刷新间隔内发生多次函数执行，requestAnimationFrame 可保证每个刷新间隔内，函数只被执行一次，这样既能保证流畅性，又能更好的节省函数执行的开销。
 
