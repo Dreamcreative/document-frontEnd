@@ -55,4 +55,4 @@ const message = urlParams.get('message');
 
 1. postMessage: 适用于跨域通信，安全且灵活
 2. contentWindow: 适用于同源页面，直接访问子页面的 document
-3. url: 使用于初始加载时传递参数，不适用动态传值
+3. url: 适用于初始加载时传递参数，不适用动态传值
