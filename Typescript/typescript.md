@@ -1,335 +1,335 @@
-# typescript（结构性的类型系统）
+# typescript
 
-## 基础类型
+1. TypeScript 和 JavaScript 有什么区别
+   1. Typescript 是 JavaScript 的超集，添加了静态类型系统
+   2. Typescript 需要编译成 JavaScript 才能运行
+   3. Typescript 提供了接口、枚举、泛型等 JavaScript 没有的特性
+   4. Typescript 支持最新的 ECMAScript 特性，并向下兼容
+   5. Typescript 提供更好的工具支持，例如代码补全、类型检查和重构工具
 
-### 布尔值 boolean
+2. 什么是类型注解
 
-### 数字 number
+类型注解是 Typescript 中明确指定变量、参数或返回值类型的方式
 
-### 字符串 string
-
-### 数组 Array
-
-#### let list : number[] = [1, 2, 3]
-
-或者
-let list : Array<number> = [1, 2, 3]
-
-### 元祖 表示一个已知元素数量和类型的数组，各元素类型不必相同
-
-#### let x:[string, number] = ['hello', 1]
-
-### 枚举 enum
-
-#### 默认情况下，从 0 开始为元素编号。
-
-也可以手动指定成员的数值
-enum  Color { red=1 , green, yellow }
-enum Color { red =1 , green=3, yellow=4}
-
-### unknown
-
-#### typescript 顶部类型，
-
-是 any 类型的安全版本
-
-使用 unknown 执行任何操作之前，必须先通过以下方法限定其类型
-
-1. 类型断言
-     (value as number).toFixed(2)
-2. 类型保护
-     if(typeof value === 'string'){ // TODO }
-     if(value instanceof string) { // TODO }
-3. 断言函数
-   function assertionFunction(arg: unknown): asserts arg is RegExp {
-     if (! (arg instanceof RegExp)) {
-      throw new TypeError('Not a RegExp: ' + arg);
-     }
-   }
-
-### any
-
-#### typescript 顶部类型，
-
-失去 typescript 的静态类型系统给予的所有保护。
-
-使用 any 时，最好先考虑使用 unknown
-
-### void/undefined/null
-
-### never
-
-#### 表示永不存在的值的类型
-
-## 类型断言
-
-### 没有运行时的影响，只在编译阶段起作用
-
-形式
-
-1. 尖括号语法
-   let value: any = 'hello';
-   let valueLength :number = (<string>value).length
-   2 . as 语法
-     let value: any = 'hello';
-     let valueLength:number = (value as string).length
-
-## type/interface 区别
-
-### 相同点
-
-#### 1. 都可以描述一个对象或函数
-
-##### interface User{
-
-name:string;
- age:number;
- (name:string, age:number): void
+```ts
+let name: string = "John";
+function add(a: number, b: number): number {
+    return a + b;
 }
+```
 
-##### type User {
+3. 什么是类型推断
 
-name:string,
- age:number,
+Typescript 能够根据上下文自动推断变量的类型，无需显式注解
+
+```ts
+// TypeScript 自动推断 name 为 string 类型
+let name = "John";
+
+// TypeScript 自动推断返回类型为 number
+function add(a: number, b: number) {
+    return a + b;
 }
-type setProps = (name:string,age:number)=> void
+```
 
-#### 2. 都可以进行拓展
+4. 解释 Typescript 中的 interface
 
-##### interface Name{
+接口是定义对象结构的一种方式，描述对象应该具有的属性和方法
 
-name:string;
-}
-interface User extends Name{
- age:number;
-}
-
-##### type Name = {
-
-name:string,
-}
-type User = Name & {age:number}
-
-### 不同点
-
-#### 1. type 可以而 interface 不行
-
-##### 1. 基本类型别名
-
-type Name = string; 2. 联合类型
- interface Dog{
- wong();
-}
- interface Cat{
- miao();
-}
-type Pet = Dog|Cat
-
-##### type 语句还可以使用 typeof 获取实例的类型进行赋值
-
-let div = document.getElement('div');
-type B=typeof div
-
-#### 2. interface 可以而 type 不行
-
-##### 声明合并
-
-interface User{
- name:string
-}
-interface User{
- age:number
-}
-/_
- User {
- name :string,
-age:number
-}
-_/
-
-## 高级类型
-
-### 交叉类型 &
-
-#### 多种类型的集合，能够访问类型集合的所有成员 （并集） & 
-
-##### interface People{
-
-age:number;
-}
-interface Man {
- sex:string;
-}
-
-const lilei = (man: People & Man)=>{
- console.log(man.age);
-console.log(man.sex);
-}
-
-### 联合类型 |
-
-#### 多种类型的联合，只能访问联合中所共有的成员 （交集） |
-
-##### interface Woman{
-
-age: number;
- sex: string;
-}
-interface Man {
- age: number;
-}
-
-declare function People () : Woman | Man;
-let people = People();
-people.age = 18; // ok
-people.sex = '男'; // false 非共有成员
-
-## 泛型
-
-### 在定义 函数/接口/类 时，不预先指定具体的类型，
-
-而是在使用的时候再指定类型的一种特性
-
-#### 泛型函数
-
-##### function identity<T>(arg: T): T {
-
-    return arg;
-
-}
-
-#### 泛型接口
-
-##### interface GenericIdentityFn {
-
-    <T>(arg: T): T;
-
-}
-
-#### 泛型类
-
-##### class GenericNumber<T> {
-
-    zeroValue: T;
-    add: (x: T, y: T) => T;
-
-}
-
-## typeof
-
-### 用来获取一个 变量/对象/函数 的类型
-
-#### interface Person {
-
+```ts
+interface Person {
     name: string;
     age: number;
-
+    greet(): void;
 }
 
-const sem: Person = { name: "semlinker", age: 30}
-type Sem = typeof sem; // type Sem = Person
-
-#### const kakuqo = {
-
-    name: "kakuqo",
+const john: Person = {
+    name: "John",
     age: 30,
-    address: {
-        province: '福建',
-        city: '厦门'
+    greet() {
+        console.log(`Hello, my name is ${this.name}`);
     }
-
-}
-
-type Kakuqo = typeof kakuqo;
-/\*\*
- * type Kakuqo = {
- *  name: string;
- *  age: number;
- *  address: {
- *   province: string;
- *   city: string;
- *  }
- * }
- \*/
-
-## 类型操作符
-
-### keyof 索引类型查询操作符
-
-#### 索引类型
-
-### in
-
-#### 约束对象 key 的值
-
-type TName = "zhangsan" | "lisi" | "wangwu";
-type TUser = {
-// TUser 的 key 只会在 TName 中选择
-  [key in TName]: number;
 };
-const obj: TUser = { zhangsan: 1, lisi: 2, wangwu: 3 };
+```
 
-### T[K] 索引访问操作符
+5. type 和 interface 有什么区别
+   1. interface 可以继承和实现，支持声明合并
+   2. type 可以创建联合类型、交叉类型，可以使用条件类型
+   3. interface 只能描述对象结构，而 type 可以为任何类型创建别名
 
-## typescript 自带的 泛型类型
-
-### Required<T> 转成非空属性
-
-#### interface IPerson {
-
-name?: string;
-  age?: number;
+```ts
+// interface 示例
+interface Animal {
+    name: string;
 }
-type IPersonRequired = Required<IPerson>;
-/_
-interface IPersonRequired {
-  name: string;
-  age: number;
-} 
-_/
-const person: IPersonRequired = { name: "zhangsan", age: 18 };
-
-//  内部实现
-type Required<T> = {
-  [P in keyof T]-?: T[P];
-};
-
-### Partial<T> 转成可空属性
-
-#### interface IPerson {
-
-name: string;
-  age: number;
+interface Dog extends Animal {
+    bark(): void;
 }
-type IPersonPartial = Partial<IPerson>;
-/_
-interface IPersonPartial {
-  name?: string;
-  age?: number;
-} 
-_/
-const person: IPersonPartial = {};
 
-//  内部实现
-type Partial<T> = {
-  [P in keyof T]?: T[P];
+// type 示例
+type Animal = {
+    name: string;
+}
+type Dog = Animal & {
+    bark(): void;
+}
+
+// 联合类型 (只能用 type)
+type ID = string | number;
+```
+
+6. 什么是泛型
+
+泛型允许创建可重用的组件，这些组件可以处理多种类型而不失去类型安全性
+
+```ts
+// 泛型函数
+function identity<T>(arg: T): T {
+    return arg;
+}
+
+// 泛型接口
+interface Box<T> {
+    value: T;
+}
+
+// 泛型类
+class Container<T> {
+    private item: T;
+    
+    constructor(item: T) {
+        this.item = item;
+    }
+    
+    getItem(): T {
+        return this.item;
+    }
+}
+```
+
+7. 联合类型和交叉类型
+   1. 联合类型：表示一个值可以有多种类型，使用 `|` 分隔
+   2. 交叉类型：将多个类型合并为一个类型，使用 `&` 分隔
+
+```ts
+// 联合类型
+type ID = string | number;
+let id: ID = 123; // 有效
+id = "abc";       // 也有效
+
+// 交叉类型
+type Employee = {
+    name: string;
+    id: number;
 };
 
-### Pick<T> 取出某些属性，提高 interface 的复用率
+type ContactInfo = {
+    email: string;
+    phone: string;
+};
 
-#### /\*
+type EmployeeWithContact = Employee & ContactInfo;
 
-Pick<T>，反之 Omit<T>
-\*/
-interface TState {
-  name: string;
-  age: number;
-  like: string[];
+const employee: EmployeeWithContact = {
+    name: "John",
+    id: 123,
+    email: "john@example.com",
+    phone: "555-1234"
+};
+```
+
+8. 类型守卫
+
+类型守卫是一种运行时检查，用于确定值的类型，帮助 Typescript 在特定代码块中缩小类型范围
+
+```ts
+// 使用 typeof 类型守卫
+function process(value: string | number) {
+    if (typeof value === "string") {
+        // 在这个块中，TypeScript 知道 value 是 string 类型
+        return value.toUpperCase();
+    } else {
+        // 在这个块中，TypeScript 知道 value 是 number 类型
+        return value.toFixed(2);
+    }
 }
-interface ISingleState {
-  name: string;
-  age: number;
-}
-interface ISingleState extends Pick<TState, "name" | "age"> {}
 
-### 。。。。
+// 使用 instanceof 类型守卫
+class Dog {
+    bark() { return "Woof!"; }
+}
+
+class Cat {
+    meow() { return "Meow!"; }
+}
+
+function makeSound(animal: Dog | Cat) {
+    if (animal instanceof Dog) {
+        // 在这个块中，TypeScript 知道 animal 是 Dog 类型
+        return animal.bark();
+    } else {
+        // 在这个块中，TypeScript 知道 animal 是 Cat 类型
+        return animal.meow();
+    }
+}
+
+// 自定义类型守卫
+interface Fish { swim(): void; }
+interface Bird { fly(): void; }
+
+function isFish(pet: Fish | Bird): pet is Fish {
+    return (pet as Fish).swim !== undefined;
+}
+
+function move(pet: Fish | Bird) {
+    if (isFish(pet)) {
+        // 在这个块中，TypeScript 知道 pet 是 Fish 类型
+        pet.swim();
+    } else {
+        // 在这个块中，TypeScript 知道 pet 是 Bird 类型
+        pet.fly();
+    }
+}
+```
+
+9. keyof 操作符
+
+keyof 操作符用于获取一个对象类型的所有键的联合类型
+
+```ts
+interface Person {
+    name: string;
+    age: number;
+    location: string;
+}
+
+type PersonKeys = keyof Person; // "name" | "age" | "location"
+
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+    return obj[key];
+}
+
+const person: Person = {
+    name: "John",
+    age: 30,
+    location: "New York"
+};
+
+const name = getProperty(person, "name"); // 类型安全，返回 string
+```
+
+10. 条件类型
+
+条件类型是根据条件表达式选择两种可能的类型之一，`类似于三目运算`
+
+```ts
+type IsString<T> = T extends string ? true : false;
+
+type A = IsString<string>;  // true
+type B = IsString<number>;  // false
+
+// 实用的条件类型示例
+type NonNullable<T> = T extends null | undefined ? never : T;
+type Extracted = NonNullable<string | null | undefined>;  // string
+```
+
+11. 在 Typescript 中处理异步操作
+
+使用 Promise 类型和 async/await 语法
+
+```ts
+// Promise 类型
+function fetchData(): Promise<User> {
+    return fetch('/api/user')
+        .then(response => response.json());
+}
+
+interface User {
+    id: number;
+    name: string;
+}
+
+// 使用 async/await
+async function getUser(): Promise<User> {
+    const response = await fetch('/api/user');
+    const user: User = await response.json();
+    return user;
+}
+```
+
+12. unknown 类型与 any 有什么区别
+    1. unknown 是类型安全的 any
+    2. 使用 unknown 类型的值需要先进行类型检查或类型断言
+    3. any 类型可以执行任何操作，绕过类型检查
+
+```ts
+// any 类型
+let valueAny: any = 10;
+valueAny.foo.bar;  // 不会报错，但运行时可能会失败
+
+// unknown 类型
+let valueUnknown: unknown = 10;
+// valueUnknown.foo.bar;  // 错误：对象的类型为 'unknown'
+
+// 需要先进行类型检查
+if (typeof valueUnknown === "object" && valueUnknown !== null) {
+    // 使用类型断言
+    const obj = valueUnknown as { foo?: { bar: string } };
+    if (obj.foo) {
+        console.log(obj.foo.bar);
+    }
+}
+```
+
+13. Typescript 中的 readonly 修饰符
+
+readonly 修饰符用于标记属性或数组为只读，防止赋值后被修改
+
+```ts
+interface Point {
+    readonly x: number;
+    readonly y: number;
+}
+
+const point: Point = { x: 10, y: 20 };
+// point.x = 5;  // 错误：无法分配到 'x' ，因为它是只读属性
+
+// 只读数组
+const numbers: ReadonlyArray<number> = [1, 2, 3];
+// numbers.push(4);  // 错误：'ReadonlyArray<number>' 上不存在属性 'push'
+```
+
+14. 装饰器
+
+装饰器是一种特殊的类型声明，可以附加到类、方法、访问器、属性或参数上，用于修改其行为或添加元数据
+
+```ts
+// 类装饰器
+function Logger(constructor: Function) {
+    console.log(`Creating instance of: ${constructor.name}`);
+}
+
+@Logger
+class Person {
+    constructor(public name: string) {}
+}
+
+// 方法装饰器
+function Log(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const original = descriptor.value;
+    
+    descriptor.value = function(...args: any[]) {
+        console.log(`Calling ${propertyKey} with:`, args);
+        return original.apply(this, args);
+    };
+    
+    return descriptor;
+}
+
+class Calculator {
+    @Log
+    add(a: number, b: number) {
+        return a + b;
+    }
+}
+```
