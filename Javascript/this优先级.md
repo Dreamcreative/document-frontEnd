@@ -18,8 +18,8 @@
 
 > 分为严格模式与非严格模式
 
-- 严格模式下 this 为 window
-- 非严格模式下 this 为 undefined
+- 非严格模式下 this 为 window
+- 严格模式下 this 为 undefined
 
 ## 箭头函数 this
 
