@@ -9,12 +9,14 @@
 3. setInterval
 4. UI rending
 5. IO
+6. MessageChannel (React 调度器中使用的就是 MessageChannel)
 
 ### 微任务
 
-1. Promise
+1. Promise.then/catch/finally - Promise 回调函数
 2. MutationObserver
-3. ......
+3. async/await - Promise 语法糖，await 之后相当于是 Promise.then()
+4. ......
 
 > 浏览器是单线程执行，只有一个主线程，先执行 script - `最大的一个宏任务`。任务分为`同步任务`和`异步任务`，执行过程中，先执行同步任务，当遇到异步任务时，如果是宏任务就放入宏任务队列中，如果是微任务就放到微任务队列中，当同步任务执行完毕之后，会去查找微任务队列是否有任务需要执行，当情况微任务队列后；就开始执行下一个宏任务。就这样 `宏任务->微任务` 反复执行就形成了 `eventloop` 事件循环
 
