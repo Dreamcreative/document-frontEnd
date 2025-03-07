@@ -11,7 +11,7 @@
 
    1. include: 匹配到的组件进行缓存 (string|RegExp|(string|RegExp)[])
    2. exclude: 匹配到的组件不进行缓存 (string|RegExp|(string|RegExp)[])
-   3. max: 最多缓存组件数，超出 max 后，会删除最早缓存的组件 (string|number)
+   3. max: 最多缓存组件数，超出 max 后，会删除最早缓存的组件 (string|number) 默认最大值为10
 
 3. 失活组件缓存在哪里
 
