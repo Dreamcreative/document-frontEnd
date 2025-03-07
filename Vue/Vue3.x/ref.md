@@ -2,6 +2,10 @@
 
 接收一个值，返回一个响应式的、可更改的 ref 对象，此对象只有一个指向其内部值的属性 `.value`
 
+## 为什么 ref 需要通过 `.value` 获取值
+
+因为 ref 通过代理 `value` 来实现响应式的
+
 ```ts
 function ref(value?: unknown) {
   return createRef(value, false)
