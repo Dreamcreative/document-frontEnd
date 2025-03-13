@@ -18,3 +18,4 @@
 2. 可以监听新增和删除
 3. 只有当属性被访问到时，才会对属性值进行监听
 4. 具有兼容性问题，
+5. Proxy 无法监听 `Set`、`WeakSet`、`Map`、`WeakMap`等对象，使用了所谓的`内部插槽`，重写了这些对象的方法 `packages/reactivity/src/collectionHandlers.ts`

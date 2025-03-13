@@ -19,3 +19,4 @@
 ## Proxy 的局限性
 
 1. 许多内置对象，例如`Map`、`Set`、`Date`、`Promise` 对象都使用所谓的`内部插槽`即`内置方法`，内置方法无法被直接调用。而 `Proxy` 无法拦截这些内部方法
+2. Proxy 无法监听 `Set`、`WeakSet`、`Map`、`WeakMap`等对象，使用了所谓的`内部插槽`，重写了这些对象的方法 `packages/reactivity/src/collectionHandlers.ts`
