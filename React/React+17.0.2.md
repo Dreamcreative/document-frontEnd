@@ -39,7 +39,7 @@ let Context = React.createContext({}, function);
 
 > 注意：要获取`Context.Provider传入的参数` ,useContext(Context) 必须是同一个 Context
 
-## `React.memo(type, compare)`
+## `React.memo(type, compare)`- 针对函数组件使用，类组件可以使用 shouldComponentUpdate 来进行优化
 
 > 参数
 
